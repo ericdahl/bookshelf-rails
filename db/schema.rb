@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_10_213931) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_10_214228) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -19,9 +19,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_10_213931) do
 
   create_table "books", force: :cascade do |t|
     t.string "title"
-    t.string "author"
+    t.integer "author_id", null: false
+    t.integer "series_id", null: false
+    t.string "status"
+    t.string "open_library_id"
+    t.string "cover_url"
+    t.integer "user_rating"
+    t.text "user_comments"
+    t.string "media_type"
+    t.date "published_date"
+    t.string "isbn"
+    t.string "genre"
+    t.integer "page_count"
+    t.datetime "started_reading_at"
+    t.datetime "finished_reading_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_books_on_author_id"
+    t.index ["series_id"], name: "index_books_on_series_id"
   end
 
   create_table "series", force: :cascade do |t|
@@ -29,4 +44,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_10_213931) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "books", "authors"
+  add_foreign_key "books", "series"
 end

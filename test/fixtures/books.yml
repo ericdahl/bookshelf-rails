@@ -14,8 +14,8 @@ one:
   isbn: MyString
   genre: MyString
   page_count: 1
-  started_reading_at: 2025-05-10 14:40:29
-  finished_reading_at: 2025-05-10 14:40:29
+  started_reading_at: 2025-05-10 14:42:28
+  finished_reading_at: 2025-05-10 14:42:28
 
 two:
   title: MyString
@@ -31,5 +31,5 @@ two:
   isbn: MyString
   genre: MyString
   page_count: 1
-  started_reading_at: 2025-05-10 14:40:29
-  finished_reading_at: 2025-05-10 14:40:29
+  started_reading_at: 2025-05-10 14:42:28
+  finished_reading_at: 2025-05-10 14:42:28
