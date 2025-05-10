@@ -1,0 +1,92 @@
+<%= form_with(model: book) do |form| %>
+  <% if book.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h2>
+
+      <ul>
+        <% book.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, style: "display: block" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :author_id, style: "display: block" %>
+    <%= form.text_field :author_id %>
+  </div>
+
+  <div>
+    <%= form.label :series_id, style: "display: block" %>
+    <%= form.text_field :series_id %>
+  </div>
+
+  <div>
+    <%= form.label :status, style: "display: block" %>
+    <%= form.text_field :status %>
+  </div>
+
+  <div>
+    <%= form.label :open_library_id, style: "display: block" %>
+    <%= form.text_field :open_library_id %>
+  </div>
+
+  <div>
+    <%= form.label :cover_url, style: "display: block" %>
+    <%= form.text_field :cover_url %>
+  </div>
+
+  <div>
+    <%= form.label :user_rating, style: "display: block" %>
+    <%= form.number_field :user_rating %>
+  </div>
+
+  <div>
+    <%= form.label :user_comments, style: "display: block" %>
+    <%= form.textarea :user_comments %>
+  </div>
+
+  <div>
+    <%= form.label :media_type, style: "display: block" %>
+    <%= form.text_field :media_type %>
+  </div>
+
+  <div>
+    <%= form.label :published_date, style: "display: block" %>
+    <%= form.date_field :published_date %>
+  </div>
+
+  <div>
+    <%= form.label :isbn, style: "display: block" %>
+    <%= form.text_field :isbn %>
+  </div>
+
+  <div>
+    <%= form.label :genre, style: "display: block" %>
+    <%= form.text_field :genre %>
+  </div>
+
+  <div>
+    <%= form.label :page_count, style: "display: block" %>
+    <%= form.number_field :page_count %>
+  </div>
+
+  <div>
+    <%= form.label :started_reading_at, style: "display: block" %>
+    <%= form.datetime_field :started_reading_at %>
+  </div>
+
+  <div>
+    <%= form.label :finished_reading_at, style: "display: block" %>
+    <%= form.datetime_field :finished_reading_at %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
