@@ -96,11 +96,11 @@ class BooksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_book
-      @book = Book.find(params.expect(:id))
+      @book = Book.find(params.require(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def book_params
-      params.expect(book: [ :title, :author_id, :series_id, :status, :open_library_id, :cover_url, :user_rating, :user_comments, :media_type, :published_date, :isbn, :genre, :page_count, :started_reading_at, :finished_reading_at ])
+      params.require(:book).permit(:title, :author_id, :series_id, :status, :open_library_id, :cover_url, :rating, :comments, :media_type, :published_date, :isbn, :genre, :page_count, :started_reading_at, :finished_reading_at)
     end
 end

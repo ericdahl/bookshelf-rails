@@ -39,14 +39,14 @@
           <dd><%= @book.page_count %></dd>
         <% end %>
 
-        <% if @book.user_rating.present? %>
+        <% if @book.rating.present? %>
           <dt>Your Rating</dt>
-          <dd><%= @book.user_rating %>/5</dd>
+          <dd><%= @book.rating %>/5</dd>
         <% end %>
 
-        <% if @book.user_comments.present? %>
+        <% if @book.comments.present? %>
           <dt>Your Comments</dt>
-          <dd><%= @book.user_comments %></dd>
+          <dd><%= @book.comments %></dd>
         <% end %>
 
         <% if @book.started_reading_at.present? %>

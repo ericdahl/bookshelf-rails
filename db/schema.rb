@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_10_214228) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_10_215027) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -20,13 +20,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_10_214228) do
   create_table "books", force: :cascade do |t|
     t.string "title"
     t.integer "author_id", null: false
-    t.integer "series_id", null: false
-    t.string "status"
+    t.integer "series_id"
     t.string "open_library_id"
     t.string "cover_url"
-    t.integer "user_rating"
-    t.text "user_comments"
-    t.string "media_type"
+    t.integer "rating"
+    t.text "comments"
     t.date "published_date"
     t.string "isbn"
     t.string "genre"
@@ -35,8 +33,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_10_214228) do
     t.datetime "finished_reading_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "media_type", default: 0, null: false
     t.index ["author_id"], name: "index_books_on_author_id"
+    t.index ["media_type"], name: "index_books_on_media_type"
+    t.index ["open_library_id"], name: "index_books_on_open_library_id", unique: true
+    t.index ["rating"], name: "index_books_on_rating"
     t.index ["series_id"], name: "index_books_on_series_id"
+    t.index ["status"], name: "index_books_on_status"
   end
 
   create_table "series", force: :cascade do |t|
