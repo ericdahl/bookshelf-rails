@@ -16,7 +16,7 @@
           <% @local_books.each do |book| %>
             <div class="book-card">
               <% if book.cover_url.present? %>
-                <%= image_tag book.cover_url, class: "book-cover" %>
+                <%= image_tag book.cover_url, class: "book-cover", alt: "#{book.title} cover" %>
               <% end %>
               <h3><%= book.title %></h3>
               <p class="book-author"><%= book.author.name %></p>
@@ -37,7 +37,7 @@
           <% @open_library_books.each do |book| %>
             <div class="book-card">
               <% if book[:cover_url].present? %>
-                <%= image_tag book[:cover_url], class: "book-cover" %>
+                <%= image_tag book[:cover_url], class: "book-cover", alt: "#{book[:title]} cover" %>
               <% end %>
               <h3><%= book[:title] %></h3>
               <p class="book-author"><%= book[:author] %></p>

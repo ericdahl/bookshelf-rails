@@ -13,11 +13,16 @@
     <% @books.each do |book| %>
       <div class="book-card">
         <% if book.cover_url.present? %>
-          <%= image_tag book.cover_url, class: "book-cover" %>
+          <% cover_url = book.cover_url.to_s %>
+          <% if cover_url.start_with?('http') %>
+            <%= image_tag cover_url, class: "book-cover", alt: "#{book.title} cover" %>
+          <% else %>
+            <%= image_tag "https://#{cover_url}", class: "book-cover", alt: "#{book.title} cover" %>
+          <% end %>
         <% end %>
         <h2><%= book.title %></h2>
         <p class="book-author">by <%= book.author.name %></p>
-        <span class="book-status status-<%= book.status.downcase %>"><%= book.status %></span>
+        <span class="book-status status-<%= book.status %>"><%= book.status %></span>
         <div class="book-actions">
           <%= link_to "View Details", book, class: "book-link" %>
         </div>
