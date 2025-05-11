@@ -47,7 +47,7 @@
               </p>
               <div class="book-footer">
                 <% if @existing_book_ids.include?(book[:open_library_id]) %>
-                  <span class="already-added">Already in your library</span>
+                  <span class="already-added">Added to Library</span>
                 <% else %>
                   <%= button_to "Add to Library", 
                       add_from_search_books_path, 
@@ -56,7 +56,7 @@
                       remote: true,
                       data: { 
                         disable_with: "Adding...",
-                        success: "this.closest('.book-card').querySelector('.book-footer').innerHTML = '<span class=\\'already-added\\'>Added to your library</span>'"
+                        success: "this.closest('.book-card').querySelector('.book-footer').innerHTML = '<span class=\\'already-added\\'>Added to Library</span>'"
                       } %>
                 <% end %>
               </div>
