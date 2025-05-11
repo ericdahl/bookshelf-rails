@@ -1,16 +1,22 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Authors" %>
 
-<h1>Authors</h1>
-
-<div id="authors">
-  <% @authors.each do |author| %>
-    <%= render author %>
-    <p>
-      <%= link_to "Show this author", author %>
-    </p>
+<div class="container">
+  <% if notice.present? %>
+    <div class="notice"><%= notice %></div>
   <% end %>
-</div>
 
-<%= link_to "New author", new_author_path %>
+  <h1>Authors</h1>
+
+  <%= link_to "New author", new_author_path, class: "new-author-button" %>
+
+  <div class="author-grid">
+    <% @authors.each do |author| %>
+      <div class="author-card">
+        <h2><%= author.name %></h2>
+        <div class="author-actions">
+          <%= link_to "View Details", author, class: "author-link" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,11 +1,29 @@
 <% content_for :title, "New author" %>
 
-<h1>New author</h1>
+<div class="container">
+  <h1>New author</h1>
 
-<%= render "form", author: @author %>
+  <%= form_with(model: @author, class: "author-form") do |f| %>
+    <% if @author.errors.any? %>
+      <div class="error-messages">
+        <h2><%= pluralize(@author.errors.count, "error") %> prohibited this author from being saved:</h2>
+        <ul>
+          <% @author.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-<br>
+    <div class="form-group">
+      <%= f.label :name, class: "form-label" %>
+      <%= f.text_field :name, class: "form-input" %>
+    </div>
 
-<div>
-  <%= link_to "Back to authors", authors_path %>
+    <div class="form-actions">
+      <%= f.submit "Create Author", class: "submit-button" %>
+    </div>
+  <% end %>
+
+  <%= link_to "Back to authors", authors_path, class: "back-link" %>
 </div>
