@@ -62,7 +62,14 @@
                 <% if @existing_book_ids.include?(book[:open_library_id]) %>
                   <span class="already-added">Already in your library</span>
                 <% else %>
-                  <%= link_to "Add to Library", new_book_path(open_library_id: book[:open_library_id]), class: "add-button" %>
+                  <%= link_to "Add to Library", 
+                      add_from_search_books_path(open_library_id: book[:open_library_id]), 
+                      class: "add-button",
+                      data: { 
+                        open_library_id: book[:open_library_id],
+                        turbo_method: :post,
+                        turbo_confirm: "Add this book to your library?"
+                      } %>
                 <% end %>
               </div>
             </div>
