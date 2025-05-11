@@ -115,7 +115,9 @@ class BooksController < ApplicationController
       )
 
       if @book.save
-        render json: { success: true, message: "Book was successfully added to your library." }
+        respond_to do |format|
+          format.js
+        end
       else
         render json: { success: false, message: @book.errors.full_messages.join(", ") }, status: :unprocessable_entity
       end

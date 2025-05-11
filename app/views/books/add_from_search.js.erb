@@ -1,0 +1,3 @@
+document.querySelector('[data-open-library-id="<%= @book.open_library_id %>"]')
+  .closest('.book-footer')
+  .innerHTML = '<span class="already-added">Added to Library</span>'; 
