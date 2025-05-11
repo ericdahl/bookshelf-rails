@@ -1,11 +1,79 @@
 <% content_for :title, "New book" %>
 
-<h1>New book</h1>
+<div class="container">
+  <h1>New book</h1>
 
-<%= render "form", book: @book %>
+  <%= form_with(model: @book, class: "book-form") do |f| %>
+    <% if @book.errors.any? %>
+      <div class="error-messages">
+        <h2><%= pluralize(@book.errors.count, "error") %> prohibited this book from being saved:</h2>
+        <ul>
+          <% @book.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-<br>
+    <div class="form-group">
+      <%= f.label :title, class: "form-label" %>
+      <%= f.text_field :title, class: "form-input" %>
+    </div>
 
-<div>
-  <%= link_to "Back to books", books_path %>
+    <div class="form-group">
+      <%= f.label :author_id, "Author", class: "form-label" %>
+      <%= f.collection_select :author_id, Author.all, :id, :name, {}, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :series_id, "Series", class: "form-label" %>
+      <%= f.collection_select :series_id, Series.all, :id, :name, {}, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :status, class: "form-label" %>
+      <%= f.select :status, ["Unread", "Reading", "Completed"], {}, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :cover_url, "Cover Image URL", class: "form-label" %>
+      <%= f.text_field :cover_url, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :published_date, class: "form-label" %>
+      <%= f.date_field :published_date, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :isbn, "ISBN", class: "form-label" %>
+      <%= f.text_field :isbn, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :genre, class: "form-label" %>
+      <%= f.text_field :genre, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :page_count, class: "form-label" %>
+      <%= f.number_field :page_count, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :user_rating, "Your Rating (1-5)", class: "form-label" %>
+      <%= f.number_field :user_rating, in: 1..5, class: "form-input" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :user_comments, "Your Comments", class: "form-label" %>
+      <%= f.text_area :user_comments, class: "form-input", rows: 5 %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Create Book", class: "submit-button" %>
+    </div>
+  <% end %>
+
+  <%= link_to "Back to books", books_path, class: "back-link" %>
 </div>

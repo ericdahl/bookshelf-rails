@@ -1,10 +1,70 @@
-<p style="color: green"><%= notice %></p>
+<% content_for :title, @book.title %>
 
-<%= render @book %>
+<div class="container">
+  <% if notice.present? %>
+    <div class="notice"><%= notice %></div>
+  <% end %>
 
-<div>
-  <%= link_to "Edit this book", edit_book_path(@book) %> |
-  <%= link_to "Back to books", books_path %>
+  <div class="book-card">
+    <% if @book.cover_url.present? %>
+      <%= image_tag @book.cover_url, class: "book-cover" %>
+    <% end %>
 
-  <%= button_to "Destroy this book", @book, method: :delete %>
+    <h1><%= @book.title %></h1>
+    <p class="book-author">by <%= @book.author.name %></p>
+    <span class="book-status status-<%= @book.status.downcase %>"><%= @book.status %></span>
+
+    <div class="book-metadata">
+      <dl>
+        <dt>Series</dt>
+        <dd><%= @book.series.name %></dd>
+
+        <% if @book.published_date.present? %>
+          <dt>Published Date</dt>
+          <dd><%= @book.published_date.strftime("%B %d, %Y") %></dd>
+        <% end %>
+
+        <% if @book.isbn.present? %>
+          <dt>ISBN</dt>
+          <dd><%= @book.isbn %></dd>
+        <% end %>
+
+        <% if @book.genre.present? %>
+          <dt>Genre</dt>
+          <dd><%= @book.genre %></dd>
+        <% end %>
+
+        <% if @book.page_count.present? %>
+          <dt>Pages</dt>
+          <dd><%= @book.page_count %></dd>
+        <% end %>
+
+        <% if @book.user_rating.present? %>
+          <dt>Your Rating</dt>
+          <dd><%= @book.user_rating %>/5</dd>
+        <% end %>
+
+        <% if @book.user_comments.present? %>
+          <dt>Your Comments</dt>
+          <dd><%= @book.user_comments %></dd>
+        <% end %>
+
+        <% if @book.started_reading_at.present? %>
+          <dt>Started Reading</dt>
+          <dd><%= @book.started_reading_at.strftime("%B %d, %Y") %></dd>
+        <% end %>
+
+        <% if @book.finished_reading_at.present? %>
+          <dt>Finished Reading</dt>
+          <dd><%= @book.finished_reading_at.strftime("%B %d, %Y") %></dd>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="book-actions">
+      <%= link_to "Edit book", edit_book_path(@book), class: "book-link" %>
+      <%= link_to "Back to books", books_path, class: "back-link" %>
+      <%= button_to "Delete book", @book, method: :delete, class: "submit-button delete-button", data: { confirm: "Are you sure you want to delete this book?" } %>
+    </div>
+  </div>
 </div>

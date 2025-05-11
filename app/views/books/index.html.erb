@@ -1,16 +1,27 @@
-<p style="color: green"><%= notice %></p>
-
 <% content_for :title, "Books" %>
 
-<h1>Books</h1>
-
-<div id="books">
-  <% @books.each do |book| %>
-    <%= render book %>
-    <p>
-      <%= link_to "Show this book", book %>
-    </p>
+<div class="container">
+  <% if notice.present? %>
+    <div class="notice"><%= notice %></div>
   <% end %>
-</div>
 
-<%= link_to "New book", new_book_path %>
+  <h1>Books</h1>
+
+  <%= link_to "New book", new_book_path, class: "new-book-button" %>
+
+  <div class="book-grid">
+    <% @books.each do |book| %>
+      <div class="book-card">
+        <% if book.cover_url.present? %>
+          <%= image_tag book.cover_url, class: "book-cover" %>
+        <% end %>
+        <h2><%= book.title %></h2>
+        <p class="book-author">by <%= book.author.name %></p>
+        <span class="book-status status-<%= book.status.downcase %>"><%= book.status %></span>
+        <div class="book-actions">
+          <%= link_to "View Details", book, class: "book-link" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
