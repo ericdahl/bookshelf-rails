@@ -16,8 +16,10 @@
 
     <div class="book-metadata">
       <dl>
-        <dt>Series</dt>
-        <dd><%= @book.series.name %></dd>
+        <% if @book.series.present? %>
+          <dt>Series</dt>
+          <dd><%= @book.series.name %></dd>
+        <% end %>
 
         <% if @book.published_date.present? %>
           <dt>Published Date</dt>
