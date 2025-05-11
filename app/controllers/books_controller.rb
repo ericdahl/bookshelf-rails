@@ -93,6 +93,37 @@ class BooksController < ApplicationController
     end
   end
 
+  # POST /books/add_from_search
+  def add_from_search
+    open_library_id = params[:open_library_id]
+    ol_book = OpenLibraryService.fetch_book(open_library_id)
+    
+    if ol_book
+      # Create or find author
+      author_name = ol_book['author_name']&.first
+      author = Author.find_or_create_by!(name: author_name) if author_name
+
+      # Create the book
+      @book = Book.new(
+        title: ol_book['title'],
+        author: author,
+        open_library_id: open_library_id,
+        cover_url: ol_book['cover_i'] ? "https://covers.openlibrary.org/b/id/#{ol_book['cover_i']}-M.jpg" : nil,
+        isbn: ol_book['isbn'],
+        published_date: ol_book['first_publish_year'],
+        status: 'unread'
+      )
+
+      if @book.save
+        render json: { success: true, message: "Book was successfully added to your library." }
+      else
+        render json: { success: false, message: @book.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      end
+    else
+      render json: { success: false, message: "Could not find book details." }, status: :not_found
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_book

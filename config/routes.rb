@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :books do
     collection do
       get :search
+      post :add_from_search
     end
   end
   resources :series
