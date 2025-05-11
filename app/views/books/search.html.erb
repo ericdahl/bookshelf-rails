@@ -1,0 +1,67 @@
+<div class="container">
+  <h1>Search Books</h1>
+
+  <%= form_with url: search_books_path, method: :get, class: "search-form" do |f| %>
+    <div class="search-input-group">
+      <%= f.text_field :q, value: @query, class: "search-input", placeholder: "Search by title or author..." %>
+      <%= f.submit "Search", class: "search-button" %>
+    </div>
+  <% end %>
+
+  <% if @query.present? %>
+    <% if @local_books.any? %>
+      <div class="search-section">
+        <h2>Books in Your Library</h2>
+        <div class="book-grid">
+          <% @local_books.each do |book| %>
+            <div class="book-card">
+              <% if book.cover_url.present? %>
+                <%= image_tag book.cover_url, class: "book-cover" %>
+              <% end %>
+              <h3><%= book.title %></h3>
+              <p class="book-author"><%= book.author.name %></p>
+              <div class="book-footer">
+                <span class="book-status">Status: <%= book.status %></span>
+                <%= link_to "View", book_path(book), class: "view-link" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @open_library_books.any? %>
+      <div class="search-section">
+        <h2>Results from OpenLibrary</h2>
+        <div class="book-grid">
+          <% @open_library_books.each do |book| %>
+            <div class="book-card">
+              <% if book[:cover_url].present? %>
+                <%= image_tag book[:cover_url], class: "book-cover" %>
+              <% end %>
+              <h3><%= book[:title] %></h3>
+              <p class="book-author"><%= book[:author] %></p>
+              <p class="book-details">
+                <%= book[:published_year] if book[:published_year].present? %>
+                <%= "ISBN: #{book[:isbn]}" if book[:isbn].present? %>
+              </p>
+              <div class="book-footer">
+                <% if @existing_book_ids.include?(book[:open_library_id]) %>
+                  <span class="already-added">Already in your library</span>
+                <% else %>
+                  <%= link_to "Add to Library", new_book_path(open_library_id: book[:open_library_id]), class: "add-button" %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @local_books.empty? && @open_library_books.empty? %>
+      <div class="no-results">
+        <p>No books found matching your search.</p>
+      </div>
+    <% end %>
+  <% end %>
+</div> 

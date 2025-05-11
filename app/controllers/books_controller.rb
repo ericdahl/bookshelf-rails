@@ -6,6 +6,42 @@ class BooksController < ApplicationController
     @books = Book.all
   end
 
+  # GET /books/search
+  def search
+    @query = params[:q]
+    return unless @query.present?
+
+    # Search in local database using SQLite-compatible case-insensitive search
+    @local_books = Book.joins(:author)
+                      .where("LOWER(books.title) LIKE ? OR LOWER(authors.name) LIKE ?", 
+                            "%#{@query.downcase}%", 
+                            "%#{@query.downcase}%")
+    
+    # Search in OpenLibrary
+    ol_results = OpenLibraryService.search(@query)
+    
+    # Transform OpenLibrary results
+    @open_library_books = ol_results['docs'].map do |doc|
+      {
+        open_library_id: doc['key'].split('/').last,
+        title: doc['title'],
+        author: doc['author_name']&.join(', '),
+        isbn: doc['isbn']&.first,
+        cover_url: doc['cover_i'] ? "https://covers.openlibrary.org/b/id/#{doc['cover_i']}-M.jpg" : nil,
+        published_year: doc['first_publish_year']
+      }
+    end
+
+    # Check which OpenLibrary books already exist in our database
+    existing_books = Book.where(open_library_id: @open_library_books.map { |b| b[:open_library_id] })
+    @existing_book_ids = existing_books.map(&:open_library_id)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: { local_books: @local_books, open_library_books: @open_library_books } }
+    end
+  end
+
   # GET /books/1 or /books/1.json
   def show
   end
