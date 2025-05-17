@@ -46,7 +46,7 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
         headers: { "Content-Type" => "application/json" }
       )
 
-    get api_v1_open_library_searches_search_url, params: { query: "The Great Gatsby" }
+    get "/api/v1/search", params: { query: "The Great Gatsby" }
     assert_response :success
 
     # Verify the response structure
