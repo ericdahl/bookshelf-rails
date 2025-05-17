@@ -1,0 +1,41 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  author: MyString
+  isbn_10: MyString
+  isbn_13: MyString
+  publication_year: 1
+  publisher: MyString
+  page_count: 1
+  description: MyText
+  cover_image_url: MyString
+  open_library_id: MyString
+  series: one
+  status: MyString
+  rating: 1
+  comments: MyText
+  book_type: MyString
+  date_added: 2025-05-17 11:25:29
+  date_started: 2025-05-17 11:25:29
+  date_finished: 2025-05-17 11:25:29
+
+two:
+  title: MyString
+  author: MyString
+  isbn_10: MyString
+  isbn_13: MyString
+  publication_year: 1
+  publisher: MyString
+  page_count: 1
+  description: MyText
+  cover_image_url: MyString
+  open_library_id: MyString
+  series: two
+  status: MyString
+  rating: 1
+  comments: MyText
+  book_type: MyString
+  date_added: 2025-05-17 11:25:29
+  date_started: 2025-05-17 11:25:29
+  date_finished: 2025-05-17 11:25:29
