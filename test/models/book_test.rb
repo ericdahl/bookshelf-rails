@@ -2,12 +2,7 @@ require "test_helper"
 
 class BookTest < ActiveSupport::TestCase
   def setup
-    @book = Book.new(
-      title: "Test Book",
-      author: "Test Author",
-      status: "want_to_read",
-      book_type: "physical_book"
-    )
+    @book = books(:one)  # Using the fixture data
   end
 
   test "should be valid" do
@@ -72,5 +67,15 @@ class BookTest < ActiveSupport::TestCase
     @book.isbn_10 = nil
     @book.isbn_13 = nil
     assert @book.valid?
+  end
+
+  test "can access different fixture books" do
+    fellowship = books(:one)
+    nineteen_eighty_four = books(:two)
+    way_of_kings = books(:the_way_of_kings)
+
+    assert_equal "The Fellowship of the Ring", fellowship.title
+    assert_equal "1984", nineteen_eighty_four.title
+    assert_equal "The Way of Kings", way_of_kings.title
   end
 end
