@@ -14,7 +14,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get "open_library_searches/search"
       resources :books # This will create routes for index, show, create, update, destroy
       resources :series # You can add this too
       get "search", to: "open_library_searches#search"
