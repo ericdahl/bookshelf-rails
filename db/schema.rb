@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_17_182605) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_17_184146) do
   create_table "books", force: :cascade do |t|
     t.string "title"
     t.string "author"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_17_182605) do
     t.text "description"
     t.string "cover_image_url"
     t.string "open_library_id"
-    t.integer "series_id", null: false
+    t.integer "series_id"
     t.string "status"
     t.integer "rating"
     t.text "comments"
