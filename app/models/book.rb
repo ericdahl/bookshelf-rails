@@ -1,8 +1,8 @@
 class Book < ApplicationRecord
   belongs_to :series, optional: true
 
-  enum status: { want_to_read: 'want_to_read', currently_reading: 'currently_reading', read: 'read' }
-  enum book_type: { physical_book: 'physical_book', ebook: 'ebook', audiobook: 'audiobook' }
+  enum :status, { want_to_read: 'want_to_read', currently_reading: 'currently_reading', read: 'read' }
+  enum :book_type, { physical_book: 'physical_book', ebook: 'ebook', audiobook: 'audiobook' }
 
   validates :title, presence: true
   validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10 }, allow_nil: true
