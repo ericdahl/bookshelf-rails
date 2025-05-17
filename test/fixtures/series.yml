@@ -1,9 +1,8 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/series.yml
+lotr:
+  name: "The Lord of the Rings"
+  description: "Epic high fantasy by J.R.R. Tolkien."
 
-one:
-  name: MyString
-  description: MyText
-
-two:
-  name: MyString
-  description: MyText
+stormlight:
+  name: "Stormlight Archive"
+  description: "Epic fantasy by Brandon Sanderson."

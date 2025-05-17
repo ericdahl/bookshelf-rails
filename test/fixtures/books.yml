@@ -1,41 +1,45 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/books.yml
+
+# Each top-level key is an arbitrary "fixture name".
+# These names are used to refer to the specific record in your tests.
+# By default, Rails creates 'one' and 'two' when you generate a model.
 
 one:
-  title: MyString
-  author: MyString
-  isbn_10: MyString
-  isbn_13: MyString
-  publication_year: 1
-  publisher: MyString
-  page_count: 1
-  description: MyText
-  cover_image_url: MyString
-  open_library_id: MyString
-  series: one
-  status: MyString
-  rating: 1
-  comments: MyText
-  book_type: MyString
-  date_added: 2025-05-17 11:25:29
-  date_started: 2025-05-17 11:25:29
-  date_finished: 2025-05-17 11:25:29
+  title: "The Fellowship of the Ring"
+  author: "J.R.R. Tolkien"
+  status: "read"
+  rating: 10
+  book_type: "physical_book"
+  publication_year: 1954
+  page_count: 423
+  isbn_13: "9780618640157"
+  open_library_id: "OL22737927M"
+  date_added: <%= Time.current - 2.years %>
+  date_finished: <%= Time.current - 1.year %>
+  comments: "A classic fantasy adventure."
+  # series: lotr # This would link to a 'lotr' fixture in series.yml
 
 two:
-  title: MyString
-  author: MyString
-  isbn_10: MyString
-  isbn_13: MyString
-  publication_year: 1
-  publisher: MyString
-  page_count: 1
-  description: MyText
-  cover_image_url: MyString
-  open_library_id: MyString
-  series: two
-  status: MyString
-  rating: 1
-  comments: MyText
-  book_type: MyString
-  date_added: 2025-05-17 11:25:29
-  date_started: 2025-05-17 11:25:29
-  date_finished: 2025-05-17 11:25:29
+  title: "1984"
+  author: "George Orwell"
+  status: "want_to_read"
+  book_type: "ebook"
+  publication_year: 1949
+  page_count: 328
+  isbn_13: "9780451524935"
+  open_library_id: "OL7983259M"
+  date_added: <%= Time.current - 6.months %>
+  # series: # This book has no series
+
+# You can add more specific fixtures
+the_way_of_kings:
+  title: "The Way of Kings"
+  author: "Brandon Sanderson"
+  status: "currently_reading"
+  book_type: "audiobook"
+  publication_year: 2010
+  page_count: 1007 # Or duration, depending on how you handle audiobooks
+  open_library_id: "OL24750687M"
+  date_added: <%= Time.current - 1.week %>
+  date_started: <%= Time.current - 3.days %>
+  # series: stormlight # Assumes a 'stormlight' fixture in series.yml
