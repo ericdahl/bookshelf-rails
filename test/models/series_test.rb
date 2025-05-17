@@ -2,7 +2,18 @@ require "test_helper"
 
 class SeriesTest < ActiveSupport::TestCase
   def setup
-    @series = Series.new(name: "Test Series", description: "A test series")
+    @series = series(:lotr)
+  end
+
+  test "fixtures are loaded correctly" do
+    lotr = series(:lotr)
+    stormlight = series(:stormlight)
+
+    assert_equal "The Lord of the Rings", lotr.name
+    assert_equal "Epic high fantasy by J.R.R. Tolkien.", lotr.description
+    
+    assert_equal "Stormlight Archive", stormlight.name
+    assert_equal "Epic fantasy by Brandon Sanderson.", stormlight.description
   end
 
   test "should be valid" do
@@ -17,7 +28,6 @@ class SeriesTest < ActiveSupport::TestCase
 
   test "name should be unique" do
     duplicate_series = @series.dup
-    @series.save
     assert_not duplicate_series.valid?
     assert_includes duplicate_series.errors[:name], "has already been taken"
   end
@@ -27,7 +37,6 @@ class SeriesTest < ActiveSupport::TestCase
   end
 
   test "should nullify associated books when destroyed" do
-    @series.save
     book = Book.create!(title: "Test Book", series: @series, status: :want_to_read)
     @series.destroy
     assert_nil book.reload.series_id
@@ -40,14 +49,12 @@ class SeriesTest < ActiveSupport::TestCase
   end
 
   test "can be updated" do
-    @series.save
     new_name = "Updated Series"
     @series.update(name: new_name)
     assert_equal new_name, @series.reload.name
   end
 
   test "can be destroyed" do
-    @series.save
     assert_difference "Series.count", -1 do
       @series.destroy
     end
