@@ -36,28 +36,38 @@ module Api
         begin
           # Set a User-Agent as per OpenLibrary recommendations for frequent use
           headers = { "User-Agent" => "BookshelfRailsApp/1.0 (your-email@example.com)" } # Replace with your app name and contact
+          
+          request_params = {
+            q: query,
+            fields: FIELDS_TO_REQUEST,
+            limit: 10 # Adjust as needed
+          }
 
+          Rails.logger.info "[OpenLibrary API] Making request to #{OPEN_LIBRARY_SEARCH_URL} with params: #{request_params.inspect}"
+
+          start_time = Time.current
           response = HTTParty.get(
             OPEN_LIBRARY_SEARCH_URL,
-            query: {
-              q: query,
-              fields: FIELDS_TO_REQUEST,
-              limit: 10 # Adjust as needed
-            },
+            query: request_params,
             headers: headers,
             timeout: 10 # Set a timeout in seconds
           )
+          end_time = Time.current
+          duration = ((end_time - start_time) * 1000).round(2) # Convert to milliseconds
 
           if response.success?
             results = parse_open_library_response(response.parsed_response)
+            Rails.logger.info "[OpenLibrary API] Request completed in #{duration}ms with status: #{response.code} (#{results.size} results)"
             render json: results
           else
+            Rails.logger.error "[OpenLibrary API] Failed with status #{response.code}: #{response.body}"
             render json: { error: 'Failed to fetch data from OpenLibrary', details: response.body }, status: response.code
           end
         rescue HTTParty::Error => e # Covers network errors, timeouts, etc.
+          Rails.logger.error "[OpenLibrary API] HTTParty error: #{e.message}"
           render json: { error: "HTTParty error: #{e.message}" }, status: :internal_server_error
         rescue StandardError => e
-          Rails.logger.error "OpenLibrary search failed: #{e.message}\n#{e.backtrace.join("\n")}"
+          Rails.logger.error "[OpenLibrary API] Unexpected error: #{e.message}\n#{e.backtrace.join("\n")}"
           render json: { error: "An unexpected error occurred: #{e.message}" }, status: :internal_server_error
         end
       end
