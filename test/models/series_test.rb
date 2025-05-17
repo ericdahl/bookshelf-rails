@@ -11,7 +11,7 @@ class SeriesTest < ActiveSupport::TestCase
 
     assert_equal "The Lord of the Rings", lotr.name
     assert_equal "Epic high fantasy by J.R.R. Tolkien.", lotr.description
-    
+
     assert_equal "Stormlight Archive", stormlight.name
     assert_equal "Epic fantasy by Brandon Sanderson.", stormlight.description
   end

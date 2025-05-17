@@ -6,13 +6,13 @@ module Api
         # If you plan to use this API with external services or simple curl commands without complex auth, this is common.
         # For more secure APIs, you'd implement token-based authentication.
         skip_before_action :verify_authenticity_token
-  
+
         # GET /api/v1/books
         def index
           @books = Book.all
           render json: @books
         end
-  
+
         # GET /api/v1/books/:id
         def show
           @book = Book.find(params[:id])
@@ -20,7 +20,7 @@ module Api
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Book not found" }, status: :not_found
         end
-  
+
         # POST /api/v1/books
         def create
           @book = Book.new(book_params)
@@ -30,7 +30,7 @@ module Api
             render json: @book.errors, status: :unprocessable_entity # 422 Unprocessable Entity
           end
         end
-  
+
         # PUT/PATCH /api/v1/books/:id
         def update
           @book = Book.find(params[:id])
@@ -42,7 +42,7 @@ module Api
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Book not found" }, status: :not_found
         end
-  
+
         # DELETE /api/v1/books/:id
         def destroy
           @book = Book.find(params[:id])
@@ -51,9 +51,9 @@ module Api
         rescue ActiveRecord::RecordNotFound
           render json: { error: "Book not found" }, status: :not_found
         end
-  
+
         private
-  
+
         def book_params
           # Strong Parameters: Whitelist the parameters you allow for create/update
           params.require(:book).permit(
@@ -66,4 +66,4 @@ module Api
         end
       end
     end
-  end
+end

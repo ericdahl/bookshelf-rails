@@ -32,13 +32,13 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
             {
               key: "/works/OL45804W",
               title: "The Great Gatsby",
-              author_name: ["F. Scott Fitzgerald"],
-              author_key: ["OL26444A"],
+              author_name: [ "F. Scott Fitzgerald" ],
+              author_key: [ "OL26444A" ],
               first_publish_year: 1925,
-              isbn: ["9780743273565", "0743273567"],
-              publisher: ["Scribner"],
+              isbn: [ "9780743273565", "0743273567" ],
+              publisher: [ "Scribner" ],
               cover_i: 1009264,
-              edition_key: ["OL2731668M"],
+              edition_key: [ "OL2731668M" ],
               number_of_pages_median: 180
             }
           ]
@@ -48,11 +48,11 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
 
     get api_v1_open_library_searches_search_url, params: { query: "The Great Gatsby" }
     assert_response :success
-    
+
     # Verify the response structure
     json_response = JSON.parse(response.body)
     assert_equal 1, json_response.length
     assert_equal "The Great Gatsby", json_response.first["title"]
-    assert_equal ["F. Scott Fitzgerald"], json_response.first["authors"]
+    assert_equal [ "F. Scott Fitzgerald" ], json_response.first["authors"]
   end
 end

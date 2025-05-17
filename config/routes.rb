@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       get "open_library_searches/search"
       resources :books # This will create routes for index, show, create, update, destroy
       resources :series # You can add this too
-      get 'search', to: 'open_library_searches#search'
+      get "search", to: "open_library_searches#search"
     end
   end
 end

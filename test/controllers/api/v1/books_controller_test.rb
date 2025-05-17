@@ -6,7 +6,7 @@ class Api::V1::BooksControllerTest < ActionDispatch::IntegrationTest
     @minimal_book = books(:minimal_book)
     @complete_book = books(:complete_book)
     @invalid_rating_book = books(:invalid_rating_book)
-    
+
     @valid_attributes = {
       title: "Test Book",
       author: "Test Author",
