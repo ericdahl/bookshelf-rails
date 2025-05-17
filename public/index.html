@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookshelf Rails</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* A slightly softer slate-100 */
+            color: #1e293b; /* slate-800 */
+        }
+        .book-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .shelf {
+            min-height: 200px; /* Ensure shelves have some height even when empty */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: #e2e8f0; /* slate-200 for shelves */
+            transition: border-color 0.2s ease;
+        }
+        .drag-over {
+            border: 2px dashed #2563eb; /* blue-600 */
+            background-color: #dbeafe; /* blue-100 */
+        }
+        [draggable="true"] {
+            cursor: grab;
+        }
+        [draggable="true"]:active {
+            cursor: grabbing;
+        }
+        /* Custom scrollbar for a cleaner look (optional) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* slate-200 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* slate-400 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* slate-500 */
+        }
+        .search-result-card {
+            transition: background-color 0.2s ease-in-out;
+        }
+        .search-result-card:hover {
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-secondary {
+            background-color: #64748b; /* slate-500 */
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #475569; /* slate-600 */
+        }
+        .btn-disabled {
+            background-color: #94a3b8; /* slate-400 */
+            color: #e2e8f0; /* slate-200 */
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-600">My Bookshelf</h1>
+        </header>
+
+        <section id="search-section" class="mb-12 bg-white p-6 rounded-xl shadow-xl">
+            <h2 class="text-2xl font-semibold mb-4 text-sky-700">Search for Books</h2>
+            <div class="flex gap-3 mb-6">
+                <input type="text" id="search-input" placeholder="Search by title or author (e.g., Dune Frank Herbert)" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow">
+                <button id="search-button" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    Search
+                </button>
+            </div>
+            <div id="search-results-container" class="space-y-4 max-h-[50vh] overflow-y-auto">
+                </div>
+        </section>
+
+        <section id="bookshelves-section" class="grid md:grid-cols-3 gap-x-6 gap-y-8">
+            <div id="shelf-want_to_read" class="shelf-container">
+                <h2 class="text-2xl font-semibold mb-4 text-amber-600">Want to Read</h2>
+                <div id="want_to_read" class="shelf space-y-4" data-status="want_to_read">
+                    </div>
+            </div>
+
+            <div id="shelf-currently_reading" class="shelf-container">
+                <h2 class="text-2xl font-semibold mb-4 text-teal-600">Currently Reading</h2>
+                <div id="currently_reading" class="shelf space-y-4" data-status="currently_reading">
+                    </div>
+            </div>
+
+            <div id="shelf-read" class="shelf-container">
+                <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Read</h2>
+                <div id="read" class="shelf space-y-4" data-status="read">
+                    </div>
+            </div>
+        </section>
+
+        <div id="message-area" class="fixed bottom-5 right-5 z-50 space-y-2">
+            </div>
+    </div>
+
+    <script>
+        // API Base URL (ensure your Rails server is running here)
+        const API_BASE_URL = 'http://localhost:3000/api/v1';
+
+        // Store local books to check against search results and for UI updates
+        let myBooks = [];
+        let draggedBook = null; // To store the book being dragged
+
+        // --- DOM Elements ---
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const searchResultsContainer = document.getElementById('search-results-container');
+        const shelves = {
+            want_to_read: document.getElementById('want_to_read'),
+            currently_reading: document.getElementById('currently_reading'),
+            read: document.getElementById('read')
+        };
+        const messageArea = document.getElementById('message-area');
+
+        // --- Utility Functions ---
+        function showMessage(text, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = text;
+            messageDiv.className = `p-3 rounded-lg shadow-md text-sm font-medium ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-sky-500 text-white' // Default to info
+            }`;
+            messageArea.appendChild(messageDiv);
+            setTimeout(() => {
+                messageDiv.style.transition = 'opacity 0.5s ease';
+                messageDiv.style.opacity = '0';
+                setTimeout(() => messageDiv.remove(), 500);
+            }, 3000);
+        }
+
+        // --- Book Card Creation ---
+        function createBookCard(book, isSearchResult = false) {
+            const card = document.createElement('div');
+            card.className = `book-card bg-white p-4 rounded-lg shadow-md border border-slate-200 ${isSearchResult ? 'search-result-card' : ''}`;
+            // Use book.id if it's a book from our database, otherwise use book.open_library_id for search results
+            card.dataset.bookDbId = book.id; // This will be set for books from our DB
+            card.dataset.bookOlid = book.open_library_id; // This will be set for search results and our DB books if available
+
+            const title = book.title || 'No Title';
+            const authors = Array.isArray(book.authors) ? book.authors.join(', ') : (book.author_name || book.author || 'Unknown Author');
+            const coverUrl = book.cover_image_url || book.cover_image_url_medium || book.cover_image_url_large || `https://placehold.co/80x120/e2e8f0/64748b?text=${encodeURIComponent(title.substring(0,10))}`;
+
+            card.innerHTML = `
+                <div class="flex gap-4">
+                    <img src="${coverUrl}" alt="Cover of ${title}" class="w-20 h-30 object-cover rounded shadow-sm flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x120/e2e8f0/64748b?text=No+Cover';">
+                    <div class="flex-grow">
+                        <h3 class="font-semibold text-lg text-slate-700">${title}</h3>
+                        <p class="text-sm text-slate-500 mb-1">By: ${authors}</p>
+                        ${book.publication_year ? `<p class="text-xs text-slate-400">Published: ${book.publication_year}</p>` : ''}
+                        ${!isSearchResult && book.rating ? `<p class="text-xs text-slate-400">Rating: ${book.rating}/10</p>` : ''}
+                        ${!isSearchResult && book.comments ? `<p class="text-xs text-slate-400 mt-1 italic">"${book.comments}"</p>` : ''}
+                    </div>
+                </div>
+            `;
+
+            if (isSearchResult) {
+                const addButton = document.createElement('button');
+                // Check if the book from search results is already in our local 'myBooks' cache
+                const existingBook = myBooks.find(b => 
+                    b.open_library_id === book.open_library_id ||
+                    (b.isbn_13 && book.isbn_13 && b.isbn_13 === book.isbn_13) ||
+                    (b.isbn_10 && book.isbn_10 && b.isbn_10 === book.isbn_10) ||
+                    (b.title.toLowerCase() === book.title.toLowerCase() && (Array.isArray(b.authors) ? b.authors.join(', ') : b.author).toLowerCase() === authors.toLowerCase())
+                );
+
+                if (existingBook) {
+                    addButton.textContent = `On Shelf (${existingBook.status.replace(/_/g, ' ')})`;
+                    addButton.className = 'btn btn-disabled mt-3 w-full text-xs';
+                    addButton.disabled = true;
+                } else {
+                    addButton.textContent = 'Add to "Want to Read"';
+                    addButton.className = 'btn btn-primary mt-3 w-full text-xs';
+                    addButton.onclick = () => addBookToShelf(book);
+                }
+                card.appendChild(addButton);
+            } else {
+                // Make bookshelf cards draggable (only for books already on shelves)
+                card.draggable = true;
+                card.ondragstart = (event) => handleDragStart(event, book);
+            }
+            return card;
+        }
+
+        // --- API Interaction Functions ---
+        async function fetchMyBooks() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/books`);
+                if (!response.ok) throw new Error(`Failed to fetch books: ${response.status} ${response.statusText}`);
+                myBooks = await response.json();
+                renderBookshelves();
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                showMessage(`Error fetching your books: ${error.message}`, 'error');
+            }
+        }
+
+        async function performSearch(query) {
+            if (!query.trim()) {
+                searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">Enter a search term above.</p>';
+                return;
+            }
+            searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center animate-pulse">Searching...</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/search?query=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error(`Search failed: ${response.status} ${response.statusText}`);
+                const results = await response.json();
+                renderSearchResults(results);
+            } catch (error) {
+                console.error('Error performing search:', error);
+                searchResultsContainer.innerHTML = `<p class="text-red-500 text-center">Search error: ${error.message}</p>`;
+                showMessage(`Search error: ${error.message}`, 'error');
+            }
+        }
+
+        async function addBookToShelf(bookDataFromSearch) {
+            // Prepare data for our Book model
+            const newBookPayload = {
+                book: {
+                    title: bookDataFromSearch.title,
+                    // Ensure author is a string, as expected by some backend setups
+                    author: Array.isArray(bookDataFromSearch.authors) ? bookDataFromSearch.authors.join(', ') : bookDataFromSearch.authors,
+                    isbn_13: bookDataFromSearch.isbn_13,
+                    isbn_10: bookDataFromSearch.isbn_10,
+                    publication_year: bookDataFromSearch.publication_year,
+                    page_count: bookDataFromSearch.page_count,
+                    // Use the specific cover image URL from search result if available
+                    cover_image_url: bookDataFromSearch.cover_image_url_large || bookDataFromSearch.cover_image_url_medium || bookDataFromSearch.cover_image_url,
+                    open_library_id: bookDataFromSearch.open_library_id,
+                    status: 'want_to_read', // Default to "Want to Read"
+                    book_type: 'physical_book', // Default, could be made selectable
+                    date_added: new Date().toISOString()
+                }
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/books`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newBookPayload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json(); // Attempt to parse error response from Rails
+                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
+                    throw new Error(`Failed to add book: ${errorMessage}`);
+                }
+                const addedBook = await response.json();
+                myBooks.push(addedBook); // Add to local cache
+                renderBookshelves(); // Re-render shelves
+                showMessage(`"${addedBook.title}" added to Want to Read!`, 'success');
+                
+                // Update the search result button for this book
+                // Use the open_library_id from the original search data to find the card
+                const searchResultCard = document.querySelector(`[data-book-olid="${bookDataFromSearch.open_library_id}"]`);
+                if (searchResultCard) {
+                    const button = searchResultCard.querySelector('button');
+                    if (button) {
+                        button.textContent = `On Shelf (Want to read)`;
+                        button.className = 'btn btn-disabled mt-3 w-full text-xs';
+                        button.disabled = true;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error adding book:', error);
+                showMessage(`Error adding book: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateBookStatus(bookId, newStatus) {
+            // Ensure bookId is valid
+            if (!bookId) {
+                console.error('updateBookStatus called with invalid bookId:', bookId);
+                showMessage('Could not update book: Invalid book ID.', 'error');
+                // Re-fetch books to ensure UI consistency if something went wrong with drag data
+                fetchMyBooks();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ book: { status: newStatus } })
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
+                    throw new Error(`Failed to update book status: ${errorMessage}`);
+                }
+                const updatedBook = await response.json();
+                // Update local cache
+                const bookIndex = myBooks.findIndex(b => b.id === updatedBook.id);
+                if (bookIndex !== -1) {
+                    myBooks[bookIndex] = updatedBook;
+                } else { 
+                    myBooks.push(updatedBook); // Should ideally be an update
+                }
+                renderBookshelves(); // Re-render to reflect change
+                showMessage(`Book moved to "${newStatus.replace(/_/g, ' ')}"`, 'success');
+            } catch (error) {
+                console.error('Error updating book status:', error);
+                showMessage(`Error updating book: ${error.message}`, 'error');
+                fetchMyBooks(); // Re-fetch to correct any UI inconsistencies
+            }
+        }
+
+        // --- Rendering Functions ---
+        function renderBookshelves() {
+            Object.values(shelves).forEach(shelfEl => shelfEl.innerHTML = ''); // Clear existing shelves
+
+            myBooks.forEach(book => {
+                if (book.status && shelves[book.status]) {
+                    const card = createBookCard(book, false); // false because it's on a bookshelf
+                    shelves[book.status].appendChild(card);
+                }
+            });
+        }
+
+        function renderSearchResults(results) {
+            searchResultsContainer.innerHTML = ''; 
+            if (!results || results.length === 0) {
+                searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">No books found for your query.</p>';
+                return;
+            }
+            results.forEach(bookData => {
+                // Ensure bookData has open_library_id for search results
+                if (!bookData.open_library_id) {
+                    console.warn("Search result missing open_library_id:", bookData);
+                }
+                const card = createBookCard(bookData, true); // true because it's a search result
+                searchResultsContainer.appendChild(card);
+            });
+        }
+
+        // --- Drag and Drop Handlers ---
+        function handleDragStart(event, book) {
+            if (!book || !book.id) {
+                console.error("Drag start on book with no ID:", book);
+                event.preventDefault(); // Prevent dragging invalid item
+                return;
+            }
+            draggedBook = book;
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', book.id.toString()); // Ensure it's a string
+            event.target.classList.add('opacity-50');
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault(); 
+            event.dataTransfer.dropEffect = 'move';
+            const targetShelf = event.target.closest('.shelf');
+            if (targetShelf) {
+                // Remove from other shelves first to avoid multiple highlights
+                Object.values(shelves).forEach(s => s.classList.remove('drag-over'));
+                targetShelf.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(event) {
+            const targetShelf = event.target.closest('.shelf');
+            // Check if the mouse is leaving the shelf for real, not just moving over a child element
+            if (targetShelf && !targetShelf.contains(event.relatedTarget)) {
+                targetShelf.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const targetShelfElement = event.target.closest('.shelf');
+            if (targetShelfElement && draggedBook && draggedBook.id) {
+                targetShelfElement.classList.remove('drag-over');
+                const newStatus = targetShelfElement.dataset.status;
+                if (draggedBook.status !== newStatus) {
+                    updateBookStatus(draggedBook.id, newStatus);
+                }
+            } else {
+                console.warn("Drop event occurred without a valid target shelf or dragged book ID.");
+            }
+            // Clear draggedBook regardless of successful drop to prevent issues
+            draggedBook = null; 
+        }
+
+        function handleDragEnd(event) {
+            // This event fires on the source element after the drag operation.
+            if (event.target.classList.contains('book-card')) {
+                 event.target.classList.remove('opacity-50');
+            }
+            // Clean up any visual cues from all shelves
+            Object.values(shelves).forEach(shelfEl => shelfEl.classList.remove('drag-over'));
+            draggedBook = null; // Ensure draggedBook is cleared
+        }
+
+
+        // --- Event Listeners ---
+        searchButton.addEventListener('click', () => {
+            performSearch(searchInput.value);
+        });
+        searchInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                performSearch(searchInput.value);
+            }
+        });
+
+        Object.values(shelves).forEach(shelfEl => {
+            shelfEl.addEventListener('dragover', handleDragOver);
+            shelfEl.addEventListener('dragleave', handleDragLeave);
+            shelfEl.addEventListener('drop', handleDrop);
+            // dragend should be on the draggable items themselves or document, not the drop targets
+        });
+        // Add dragend to the document to catch it even if the drop is outside a valid target
+        document.addEventListener('dragend', handleDragEnd);
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMyBooks();
+            searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">Search for books to add to your shelves.</p>';
+        });
+    </script>
+</body>
+</html>
