@@ -6,3 +6,12 @@ lotr:
 stormlight:
   name: "Stormlight Archive"
   description: "Epic fantasy by Brandon Sanderson."
+
+# Test cases for edge cases
+empty_series:
+  name: "Empty Series"
+  description: "A series with no books yet."
+
+long_description_series:
+  name: "Long Description Series"
+  description: "A series with a very long description that might test any length constraints in the application. This description goes on and on to ensure we can handle longer text fields properly."

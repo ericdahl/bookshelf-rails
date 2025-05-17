@@ -13,11 +13,12 @@ one:
   publication_year: 1954
   page_count: 423
   isbn_13: "9780618640157"
+  isbn_10: "0618640150"
   open_library_id: "OL22737927M"
   date_added: <%= Time.current - 2.years %>
   date_finished: <%= Time.current - 1.year %>
   comments: "A classic fantasy adventure."
-  # series: lotr # This would link to a 'lotr' fixture in series.yml
+  series: lotr
 
 two:
   title: "1984"
@@ -27,9 +28,9 @@ two:
   publication_year: 1949
   page_count: 328
   isbn_13: "9780451524935"
+  isbn_10: "0451524934"
   open_library_id: "OL7983259M"
   date_added: <%= Time.current - 6.months %>
-  # series: # This book has no series
 
 # You can add more specific fixtures
 the_way_of_kings:
@@ -38,8 +39,43 @@ the_way_of_kings:
   status: "currently_reading"
   book_type: "audiobook"
   publication_year: 2010
-  page_count: 1007 # Or duration, depending on how you handle audiobooks
+  page_count: 1007
+  isbn_13: "9780765326355"
+  isbn_10: "0765326353"
   open_library_id: "OL24750687M"
   date_added: <%= Time.current - 1.week %>
   date_started: <%= Time.current - 3.days %>
-  # series: stormlight # Assumes a 'stormlight' fixture in series.yml
+  series: stormlight
+
+# Test cases for edge cases
+minimal_book:
+  title: "Minimal Book"
+  status: "want_to_read"
+  book_type: "physical_book"
+
+invalid_rating_book:
+  title: "Invalid Rating Book"
+  status: "read"
+  rating: 11
+  book_type: "physical_book"
+
+# Book with all optional fields
+complete_book:
+  title: "Complete Book"
+  author: "Test Author"
+  status: "read"
+  rating: 8
+  book_type: "physical_book"
+  publication_year: 2024
+  page_count: 300
+  isbn_13: "9781234567890"
+  isbn_10: "1234567890"
+  open_library_id: "OL123456W"
+  publisher: "Test Publisher"
+  description: "A complete test book"
+  cover_image_url: "https://example.com/cover.jpg"
+  date_added: <%= Time.current %>
+  date_started: <%= Time.current - 1.week %>
+  date_finished: <%= Time.current - 1.day %>
+  comments: "Test comments"
+  series: lotr
