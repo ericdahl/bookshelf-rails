@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookshelf</title>
+    <title>Bookshelf Rails</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* A slightly softer slate-100 */
-            color: #1e293b; /* slate-800 */
+            background-color: #f0f4f8;
+            color: #1e293b;
         }
         .book-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -20,15 +20,15 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .shelf {
-            min-height: 200px; /* Ensure shelves have some height even when empty */
+            min-height: 200px;
             border-radius: 0.5rem;
             padding: 1rem;
-            background-color: #e2e8f0; /* slate-200 for shelves */
+            background-color: #e2e8f0;
             transition: border-color 0.2s ease;
         }
         .drag-over {
-            border: 2px dashed #2563eb; /* blue-600 */
-            background-color: #dbeafe; /* blue-100 */
+            border: 2px dashed #2563eb;
+            background-color: #dbeafe;
         }
         [draggable="true"] {
             cursor: grab;
@@ -36,26 +36,22 @@
         [draggable="true"]:active {
             cursor: grabbing;
         }
-        /* Custom scrollbar for a cleaner look (optional) */
         ::-webkit-scrollbar {
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #e2e8f0; /* slate-200 */
+            background: #e2e8f0;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8; /* slate-400 */
+            background: #94a3b8;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #64748b; /* slate-500 */
-        }
-        .search-result-card {
-            transition: background-color 0.2s ease-in-out;
+            background: #64748b;
         }
         .search-result-card:hover {
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #f8fafc;
         }
         .btn {
             padding: 0.5rem 1rem;
@@ -70,181 +66,134 @@
             transform: scale(0.98);
         }
         .btn-primary {
-            background-color: #2563eb; /* blue-600 */
-            color: white;
+            background-color: #2563eb; color: white;
         }
         .btn-primary:hover {
-            background-color: #1d4ed8; /* blue-700 */
+            background-color: #1d4ed8;
         }
         .btn-secondary {
-            background-color: #64748b; /* slate-500 */
-            color: white;
+            background-color: #64748b; color: white;
         }
         .btn-secondary:hover {
-            background-color: #475569; /* slate-600 */
+            background-color: #475569;
+        }
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #cbd5e1; /* slate-300 */
+            color: #334155; /* slate-700 */
+        }
+        .btn-outline:hover {
+            background-color: #f1f5f9; /* slate-100 */
+            border-color: #94a3b8; /* slate-400 */
         }
         .btn-disabled {
-            background-color: #94a3b8; /* slate-400 */
-            color: #e2e8f0; /* slate-200 */
-            cursor: not-allowed;
+            background-color: #94a3b8; color: #e2e8f0; cursor: not-allowed;
         }
-        /* Star rating styling */
-        .star-rating {
-            display: inline-flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-        }
-        .star-rating input[type="radio"] {
-            display: none;
-        }
-        .star-rating label {
-            font-size: 1.5rem;
-            color: #d1d5db;
-            cursor: pointer;
-            padding: 0 0.125rem;
-            transition: color 0.2s ease-in-out;
-        }
+        .star-rating { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; }
+        .star-rating input[type="radio"] { display: none; }
+        .star-rating label { font-size: 1.5rem; color: #d1d5db; cursor: pointer; padding: 0 0.125rem; transition: color 0.2s ease-in-out; }
         .star-rating input[type="radio"]:checked ~ label,
         .star-rating label:hover,
-        .star-rating label:hover ~ label {
-            color: #f59e0b;
-        }
+        .star-rating label:hover ~ label { color: #f59e0b; }
         .star-rating input[type="radio"]:not(:checked) ~ label:hover,
-        .star-rating input[type="radio"]:not(:checked) ~ label:hover ~ label {
-            color: #f59e0b;
+        .star-rating input[type="radio"]:not(:checked) ~ label:hover ~ label { color: #f59e0b; }
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        .modal-content::-webkit-scrollbar-track { background-color: #f1f5f9; }
+
+        /* Table Styles */
+        .bookshelf-table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        /* Modal scrollbar styling */
-        .modal-content::-webkit-scrollbar {
-            width: 6px;
+        .bookshelf-table th, .bookshelf-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #cbd5e1; /* slate-300 */
         }
-        .modal-content::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 3px;
+        .bookshelf-table th {
+            background-color: #f1f5f9; /* slate-100 */
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            position: relative; /* For sort icon positioning */
         }
-        .modal-content::-webkit-scrollbar-track {
-            background-color: #f1f5f9;
+        .bookshelf-table th:hover {
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        .bookshelf-table tbody tr:hover {
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .bookshelf-table tbody tr {
+            cursor: pointer;
+        }
+        .sort-icon {
+            margin-left: 0.25rem;
+            opacity: 0.5;
+            display: inline-block; /* Keep it on the same line */
+        }
+        .sort-icon.active {
+            opacity: 1;
         }
     </style>
 </head>
 <body class="min-h-screen">
     <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-        <header class="mb-10 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-sky-600">Bookshelf</h1>
+        <header class="mb-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-sky-600">My Bookshelf</h1>
         </header>
+
+        <div class="mb-6 flex justify-end">
+            <button id="toggleViewBtn" class="btn btn-outline">
+                <svg id="viewToggleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                </svg>
+                <span id="viewToggleText">Compact View</span>
+            </button>
+        </div>
 
         <section id="search-section" class="mb-12 bg-white p-6 rounded-xl shadow-xl">
             <h2 class="text-2xl font-semibold mb-4 text-sky-700">Search for Books</h2>
             <div class="flex gap-3 mb-6">
                 <input type="text" id="search-input" placeholder="Search by title or author (e.g., Dune Frank Herbert)" class="flex-grow p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-shadow">
                 <button id="search-button" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                     Search
                 </button>
             </div>
-            <div id="search-results-container" class="space-y-4 max-h-[50vh] overflow-y-auto">
-                </div>
+            <div id="search-results-container" class="space-y-4 max-h-[50vh] overflow-y-auto"></div>
         </section>
 
         <div id="bookDetailsModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-800" id="modalBookTitle">Book Title</h3>
-                            <p class="text-sm text-gray-500" id="modalBookAuthor">By Author Name</p>
-                        </div>
-                        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200"><div class="flex items-start justify-between"><div><h3 class="text-xl font-semibold text-gray-800" id="modalBookTitle">Book Title</h3><p class="text-sm text-gray-500" id="modalBookAuthor">By Author Name</p></div><button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div>
                 <div class="p-6 space-y-6 modal-content max-h-[calc(100vh-200px)] overflow-y-auto">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">My Rating (1-10)</label>
-                        <div class="star-rating">
-                            <input type="radio" id="star10" name="rating" value="10" /><label for="star10" title="10 stars">★</label>
-                            <input type="radio" id="star9" name="rating" value="9" /><label for="star9" title="9 stars">★</label>
-                            <input type="radio" id="star8" name="rating" value="8" /><label for="star8" title="8 stars">★</label>
-                            <input type="radio" id="star7" name="rating" value="7" /><label for="star7" title="7 stars">★</label>
-                            <input type="radio" id="star6" name="rating" value="6" /><label for="star6" title="6 stars">★</label>
-                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars">★</label>
-                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label>
-                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label>
-                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label>
-                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Book Type</label>
-                        <div class="flex items-center space-x-4">
-                            <label for="formatBook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                                <input type="radio" id="formatBook" name="book_type" value="physical_book" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="text-gray-700">Physical Book</span>
-                            </label>
-                            <label for="formatAudiobook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                                <input type="radio" id="formatAudiobook" name="book_type" value="audiobook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="text-gray-700">Audiobook</span>
-                            </label>
-                            <label for="formatEbook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
-                                <input type="radio" id="formatEbook" name="book_type" value="ebook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                <span class="text-gray-700">E-book</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="comments" class="block text-sm font-medium text-gray-700">Comments / Review</label>
-                        <textarea id="comments" name="comments" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5" placeholder="What did you think of this book? (Optional)"></textarea>
-                        <p class="mt-1 text-xs text-gray-500">Your comments will be private unless you choose to share them.</p>
-                    </div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">My Rating (1-10)</label><div class="star-rating"><input type="radio" id="star10" name="rating" value="10" /><label for="star10" title="10 stars">★</label><input type="radio" id="star9" name="rating" value="9" /><label for="star9" title="9 stars">★</label><input type="radio" id="star8" name="rating" value="8" /><label for="star8" title="8 stars">★</label><input type="radio" id="star7" name="rating" value="7" /><label for="star7" title="7 stars">★</label><input type="radio" id="star6" name="rating" value="6" /><label for="star6" title="6 stars">★</label><input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars">★</label><input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label><input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label><input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label><input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label></div></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-2">Book Type</label><div class="flex items-center space-x-4"><label for="formatBook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"><input type="radio" id="formatBook" name="book_type" value="physical_book" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="text-gray-700">Physical Book</span></label><label for="formatAudiobook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"><input type="radio" id="formatAudiobook" name="book_type" value="audiobook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="text-gray-700">Audiobook</span></label><label for="formatEbook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"><input type="radio" id="formatEbook" name="book_type" value="ebook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"><span class="text-gray-700">E-book</span></label></div></div>
+                    <div><label for="comments" class="block text-sm font-medium text-gray-700">Comments / Review</label><textarea id="comments" name="comments" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5" placeholder="What did you think of this book? (Optional)"></textarea><p class="mt-1 text-xs text-gray-500">Your comments will be private unless you choose to share them.</p></div>
                 </div>
-
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
-                    <button type="button" id="cancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                        Cancel
-                    </button>
-                    <button type="button" id="saveDetailsBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
-                        Save Details
-                    </button>
-                </div>
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3"><button type="button" id="cancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">Cancel</button><button type="button" id="saveDetailsBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">Save Details</button></div>
             </div>
         </div>
 
         <section id="bookshelves-section" class="grid md:grid-cols-3 gap-x-6 gap-y-8">
-            <div id="shelf-want_to_read" class="shelf-container">
-                <h2 class="text-2xl font-semibold mb-4 text-amber-600">Want to Read</h2>
-                <div id="want_to_read" class="shelf space-y-4" data-status="want_to_read">
-                    </div>
-            </div>
-
-            <div id="shelf-currently_reading" class="shelf-container">
-                <h2 class="text-2xl font-semibold mb-4 text-teal-600">Currently Reading</h2>
-                <div id="currently_reading" class="shelf space-y-4" data-status="currently_reading">
-                    </div>
-            </div>
-
-            <div id="shelf-read" class="shelf-container">
-                <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Read</h2>
-                <div id="read" class="shelf space-y-4" data-status="read">
-                    </div>
-            </div>
+            <div id="shelf-want_to_read" class="shelf-container"><h2 class="text-2xl font-semibold mb-4 text-amber-600">Want to Read</h2><div id="want_to_read" class="shelf space-y-4" data-status="want_to_read"></div></div>
+            <div id="shelf-currently_reading" class="shelf-container"><h2 class="text-2xl font-semibold mb-4 text-teal-600">Currently Reading</h2><div id="currently_reading" class="shelf space-y-4" data-status="currently_reading"></div></div>
+            <div id="shelf-read" class="shelf-container"><h2 class="text-2xl font-semibold mb-4 text-indigo-600">Read</h2><div id="read" class="shelf space-y-4" data-status="read"></div></div>
         </section>
 
-        <div id="message-area" class="fixed bottom-5 right-5 z-50 space-y-2">
-            </div>
+        <div id="message-area" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
     </div>
 
     <script>
-        // API Base URL (ensure your Rails server is running here)
         const API_BASE_URL = 'http://localhost:3000/api/v1';
-
-        // Store local books to check against search results and for UI updates
         let myBooks = [];
-        let draggedBook = null; // To store the book being dragged
+        let draggedBook = null;
+
+        // --- View State ---
+        let isCompactView = false;
+        let currentSortColumn = 'title'; // Default sort column
+        let currentSortDirection = 'asc'; // Default sort direction ('asc' or 'desc')
 
         // --- DOM Elements ---
         const searchInput = document.getElementById('search-input');
@@ -256,44 +205,36 @@
             read: document.getElementById('read')
         };
         const messageArea = document.getElementById('message-area');
+        const toggleViewBtn = document.getElementById('toggleViewBtn');
+        const viewToggleText = document.getElementById('viewToggleText');
+        const viewToggleIcon = document.getElementById('viewToggleIcon');
+        const cardViewIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>`;
+        const listViewIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" /></svg>`;
 
-        // --- Utility Functions ---
+
         function showMessage(text, type = 'success') {
             const messageDiv = document.createElement('div');
             messageDiv.textContent = text;
-            messageDiv.className = `p-3 rounded-lg shadow-md text-sm font-medium ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                'bg-sky-500 text-white' // Default to info
-            }`;
+            messageDiv.className = `p-3 rounded-lg shadow-md text-sm font-medium ${type === 'success' ? 'bg-green-500 text-white' : type === 'error' ? 'bg-red-500 text-white' : 'bg-sky-500 text-white'}`;
             messageArea.appendChild(messageDiv);
-            setTimeout(() => {
-                messageDiv.style.transition = 'opacity 0.5s ease';
-                messageDiv.style.opacity = '0';
-                setTimeout(() => messageDiv.remove(), 500);
-            }, 3000);
+            setTimeout(() => { messageDiv.style.transition = 'opacity 0.5s ease'; messageDiv.style.opacity = '0'; setTimeout(() => messageDiv.remove(), 500); }, 3000);
         }
 
-        // --- Book Card Creation ---
+        // --- Book Card and Table Row Creation ---
         function createBookCard(book, isSearchResult = false) {
+            // ... (existing createBookCard function - unchanged for this update, but ensure it sets book.id on card.dataset.bookDbId for books from DB)
             const card = document.createElement('div');
             card.className = `book-card bg-white p-4 rounded-lg shadow-md border border-slate-200 ${isSearchResult ? 'search-result-card' : ''}`;
-            card.dataset.bookDbId = book.id; // This will be undefined for new books from search results until saved
+            // Ensure book.id (from DB) or a unique temporary ID is used for dataset.bookDbId if needed for other interactions
+            // For books from DB, book.id should be present. For search results, it might be undefined until added.
+            card.dataset.bookDbId = book.id || book.open_library_id; // Use OLID as fallback for search results not yet in DB
             card.dataset.bookOlid = book.open_library_id;
 
             const title = book.title || 'No Title';
-            // Ensure authors is treated as a string for display.
-            // For books from your DB, 'book.author' should be the string.
-            // For OpenLibrary results, 'book.authors' might be an array, or 'book.author_name'.
             let displayAuthors = 'Unknown Author';
-            if (book.author) { // From your DB
-                displayAuthors = book.author;
-            } else if (Array.isArray(book.authors)) { // OpenLibrary array
-                 displayAuthors = book.authors.join(', ');
-            } else if (book.author_name) { // OpenLibrary string or array
-                displayAuthors = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name;
-            }
-
+            if (book.author) { displayAuthors = book.author; }
+            else if (Array.isArray(book.authors)) { displayAuthors = book.authors.join(', '); }
+            else if (book.author_name) { displayAuthors = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name; }
 
             const coverUrl = book.cover_image_url || book.cover_image_url_medium || book.cover_image_url_large || `https://placehold.co/80x120/e2e8f0/64748b?text=${encodeURIComponent(title.substring(0,10))}`;
 
@@ -313,12 +254,9 @@
 
             if (isSearchResult) {
                 const existingBook = myBooks.find(b =>
-                    b.open_library_id === book.open_library_id ||
-                    (b.isbn_13 && book.isbn_13 && b.isbn_13 === book.isbn_13) ||
-                    (b.isbn_10 && book.isbn_10 && b.isbn_10 === book.isbn_10) ||
-                    (b.title.toLowerCase() === book.title.toLowerCase() && (b.author || '').toLowerCase() === displayAuthors.toLowerCase())
+                    (b.open_library_id && b.open_library_id === book.open_library_id) ||
+                    (b.title.toLowerCase() === title.toLowerCase() && (b.author || '').toLowerCase() === displayAuthors.toLowerCase())
                 );
-
 
                 if (existingBook) {
                     const statusButton = document.createElement('button');
@@ -329,54 +267,62 @@
                 } else {
                     const quickAddContainer = document.createElement('div');
                     quickAddContainer.className = 'mt-3 flex gap-2';
-                    
-                    const buttons = [
+                    const buttonsData = [
                         { status: 'want_to_read', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>`, text: 'Want to Read', color: 'amber'},
                         { status: 'currently_reading', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>`, text: 'Reading', color: 'teal'},
                         { status: 'read', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`, text: 'Read', color: 'indigo'}
                     ];
-
-                    buttons.forEach(({ status, icon, text, color }) => {
+                    buttonsData.forEach(({ status, icon, text, color }) => {
                         const button = document.createElement('button');
                         button.className = `btn flex-1 flex items-center justify-center gap-1 text-xs px-2 py-1.5 bg-${color}-50 hover:bg-${color}-100 text-${color}-700 border border-${color}-200 hover:border-${color}-300 transition-colors`;
                         button.innerHTML = `${icon}${text}`;
-                        button.onclick = (e) => {
-                            e.stopPropagation(); // Prevent card click if button is clicked
-                            addBookToShelf(book, status);
-                        };
+                        button.onclick = (e) => { e.stopPropagation(); addBookToShelf(book, status); };
                         quickAddContainer.appendChild(button);
                     });
                     card.appendChild(quickAddContainer);
                 }
-            } else {
-                // This is a book on a shelf
+            } else { // Book on a shelf (not search result)
                 card.style.cursor = 'pointer';
                 card.addEventListener('click', (e) => {
-                    // Only prevent modal if a drag operation is currently active.
-                    // The `draggedBook` variable is set during dragstart and cleared on dragend/drop.
-                    if (draggedBook) {
-                        // console.log('Modal opening prevented: drag operation active.');
-                        return;
-                    }
-                    // Check if the click target is one of the quick add buttons (should not happen here, but good practice)
-                    if (e.target.closest('.btn')) {
-                        return;
-                    }
-                    
-                    // console.log('Shelf book card clicked, opening modal for:', book); // For debugging
-                    // e.preventDefault(); // Not strictly necessary unless the card is a link
+                    if (draggedBook) return;
+                    if (e.target.closest('.btn')) return;
                     openBookDetailsModal(book);
                 });
-                
                 card.draggable = true;
-                card.ondragstart = (event) => {
-                    // event.stopPropagation(); // This can sometimes interfere with the click event not firing after drag.
-                                            // Let's test without it first, as draggedBook check should suffice.
-                                            // The main goal is to set draggedBook.
-                    handleDragStart(event, book);
-                };
+                card.ondragstart = (event) => { handleDragStart(event, book); };
             }
             return card;
+        }
+
+        function createBookTableRow(book) {
+            const row = document.createElement('tr');
+            row.className = 'text-sm'; // Add base styling for table rows
+            row.dataset.bookDbId = book.id; // Important for opening the modal
+
+            // Handle potentially missing data gracefully
+            const title = book.title || 'N/A';
+            const author = book.author || 'N/A';
+            const rating = book.rating ? `${book.rating}/10` : 'N/A';
+            const series = book.series || 'N/A'; // Placeholder for series data
+
+            row.innerHTML = `
+                <td class="py-2 px-3">${title}</td>
+                <td class="py-2 px-3">${author}</td>
+                <td class="py-2 px-3">${rating}</td>
+                <td class="py-2 px-3">${series}</td>
+            `;
+            row.addEventListener('click', () => {
+                // Ensure the book object passed to openBookDetailsModal has an 'id'
+                // This might require fetching the full book details if 'book' here is a summary
+                const fullBook = myBooks.find(b => b.id === book.id);
+                if (fullBook) {
+                    openBookDetailsModal(fullBook);
+                } else {
+                    console.warn("Could not find full book details for modal from table row:", book);
+                    // Optionally, you could try to open with partial data or show an error
+                }
+            });
+            return row;
         }
 
         // --- API Interaction Functions ---
@@ -385,7 +331,7 @@
                 const response = await fetch(`${API_BASE_URL}/books`);
                 if (!response.ok) throw new Error(`Failed to fetch books: ${response.status} ${response.statusText}`);
                 myBooks = await response.json();
-                renderBookshelves();
+                renderBookshelves(); // This will now respect isCompactView and sorting
             } catch (error) {
                 console.error('Error fetching books:', error);
                 showMessage(`Error fetching your books: ${error.message}`, 'error');
@@ -393,18 +339,13 @@
         }
 
         async function performSearch(query) {
+            // ... (existing performSearch function - unchanged)
             if (!query.trim()) {
                 searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">Enter a search term above.</p>';
                 return;
             }
             searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center animate-pulse">Searching...</p>';
             try {
-                // Construct authors from OpenLibrary's author_name field for the payload
-                let authorsForPayload = bookDataFromSearch.author_name;
-                if (Array.isArray(authorsForPayload)) {
-                    authorsForPayload = authorsForPayload.join(', ');
-                }
-
                 const response = await fetch(`${API_BASE_URL}/search?query=${encodeURIComponent(query)}`);
                 if (!response.ok) throw new Error(`Search failed: ${response.status} ${response.statusText}`);
                 const results = await response.json();
@@ -417,225 +358,263 @@
         }
 
         async function addBookToShelf(bookDataFromSearch, newStatus) {
-            // Prepare data for our Book model
-            // Ensure author is a string, as expected by Rails backend
+            // ... (existing addBookToShelf function - largely unchanged, ensure it calls renderBookshelves at the end)
             let authorString = 'Unknown Author';
-            if (Array.isArray(bookDataFromSearch.authors)) { // From some search APIs
-                authorString = bookDataFromSearch.authors.join(', ');
-            } else if (bookDataFromSearch.authors) { // String from some search APIs
-                authorString = bookDataFromSearch.authors;
-            } else if (Array.isArray(bookDataFromSearch.author_name)) { // From OpenLibrary
-                authorString = bookDataFromSearch.author_name.join(', ');
-            } else if (bookDataFromSearch.author_name) { // String from OpenLibrary
-                authorString = bookDataFromSearch.author_name;
-            }
-
+            if (Array.isArray(bookDataFromSearch.authors)) { authorString = bookDataFromSearch.authors.join(', '); }
+            else if (bookDataFromSearch.authors) { authorString = bookDataFromSearch.authors; }
+            else if (Array.isArray(bookDataFromSearch.author_name)) { authorString = bookDataFromSearch.author_name.join(', '); }
+            else if (bookDataFromSearch.author_name) { authorString = bookDataFromSearch.author_name; }
 
             const newBookPayload = {
                 book: {
                     title: bookDataFromSearch.title,
                     author: authorString,
-                    isbn_13: bookDataFromSearch.isbn_13 ? bookDataFromSearch.isbn_13[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn[0] : null), // OL often returns arrays
-                    isbn_10: bookDataFromSearch.isbn_10 ? bookDataFromSearch.isbn_10[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn.find(i => i.length === 10) : null), // OL often returns arrays
-                    publication_year: bookDataFromSearch.first_publish_year || bookDataFromSearch.publication_year, // OL uses first_publish_year
-                    page_count: bookDataFromSearch.number_of_pages_median || bookDataFromSearch.page_count, // OL uses number_of_pages_median
-                    cover_image_url: bookDataFromSearch.cover_i ? `https://covers.openlibrary.org/b/id/${bookDataFromSearch.cover_i}-L.jpg` : (bookDataFromSearch.cover_image_url || null), // OL uses cover_i
-                    open_library_id: bookDataFromSearch.key ? bookDataFromSearch.key.replace("/works/", "") : bookDataFromSearch.open_library_id, // OL uses key
+                    isbn_13: bookDataFromSearch.isbn_13 ? bookDataFromSearch.isbn_13[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn.find(i => i.length === 13) : null),
+                    isbn_10: bookDataFromSearch.isbn_10 ? bookDataFromSearch.isbn_10[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn.find(i => i.length === 10) : null),
+                    publication_year: bookDataFromSearch.first_publish_year || bookDataFromSearch.publication_year,
+                    page_count: bookDataFromSearch.number_of_pages_median || bookDataFromSearch.page_count,
+                    cover_image_url: bookDataFromSearch.cover_i ? `https://covers.openlibrary.org/b/id/${bookDataFromSearch.cover_i}-L.jpg` : (bookDataFromSearch.cover_image_url || null),
+                    open_library_id: bookDataFromSearch.key ? bookDataFromSearch.key.replace("/works/", "") : bookDataFromSearch.open_library_id,
                     status: newStatus,
                     book_type: 'physical_book', // Default
                     date_added: new Date().toISOString()
+                    // Add series: bookDataFromSearch.series_name or similar if available from API
                 }
             };
-            
-            // Clean up undefined fields to avoid sending them as null if not desired by backend
-            for (const key in newBookPayload.book) {
-                if (newBookPayload.book[key] === undefined) {
-                    delete newBookPayload.book[key];
-                }
-            }
-
+            for (const key in newBookPayload.book) { if (newBookPayload.book[key] === undefined) { delete newBookPayload.book[key]; } }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/books`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newBookPayload)
-                });
-                if (!response.ok) {
-                    const errorData = await response.json(); 
-                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
-                    throw new Error(`Failed to add book: ${errorMessage}`);
-                }
+                const response = await fetch(`${API_BASE_URL}/books`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newBookPayload) });
+                if (!response.ok) { const errorData = await response.json(); const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`; throw new Error(`Failed to add book: ${errorMessage}`); }
                 const addedBook = await response.json();
-                myBooks.push(addedBook); 
-                renderBookshelves(); 
+                myBooks.push(addedBook);
+                renderBookshelves();
                 showMessage(`"${addedBook.title}" added to "${newStatus.replace(/_/g, ' ')}"`, 'success');
                 
-                // Update the search result card to show it's on a shelf
                 const olIdToFind = bookDataFromSearch.key ? bookDataFromSearch.key.replace("/works/", "") : bookDataFromSearch.open_library_id;
                 const searchResultCard = document.querySelector(`[data-book-olid="${olIdToFind}"]`);
-
                 if (searchResultCard) {
-                    const quickAddContainer = searchResultCard.querySelector('.flex.gap-2'); // The container of quick add buttons
+                    const quickAddContainer = searchResultCard.querySelector('.flex.gap-2');
                     if (quickAddContainer) {
-                        quickAddContainer.innerHTML = ''; // Clear buttons
+                        quickAddContainer.innerHTML = '';
                         const statusButton = document.createElement('button');
                         statusButton.textContent = `On Shelf (${newStatus.replace(/_/g, ' ')})`;
-                        statusButton.className = 'btn btn-disabled mt-0 w-full text-xs'; // Adjusted mt-0 as it's replacing buttons
+                        statusButton.className = 'btn btn-disabled mt-0 w-full text-xs';
                         statusButton.disabled = true;
                         quickAddContainer.appendChild(statusButton);
                     }
                 }
-
-
-            } catch (error) {
-                console.error('Error adding book:', error);
-                showMessage(`Error adding book: ${error.message}`, 'error');
-            }
+            } catch (error) { console.error('Error adding book:', error); showMessage(`Error adding book: ${error.message}`, 'error'); }
         }
 
         async function updateBookStatus(bookId, newStatus) {
-            if (!bookId) {
-                console.error('updateBookStatus called with invalid bookId:', bookId);
-                showMessage('Could not update book: Invalid book ID.', 'error');
-                fetchMyBooks();
-                return;
-            }
+            // ... (existing updateBookStatus function - ensure it calls renderBookshelves)
+            if (!bookId) { console.error('updateBookStatus called with invalid bookId:', bookId); showMessage('Could not update book: Invalid book ID.', 'error'); fetchMyBooks(); return; }
             try {
-                const response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ book: { status: newStatus } })
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
-                    throw new Error(`Failed to update book status: ${errorMessage}`);
-                }
+                const response = await fetch(`${API_BASE_URL}/books/${bookId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ book: { status: newStatus } }) });
+                if (!response.ok) { const errorData = await response.json(); const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`; throw new Error(`Failed to update book status: ${errorMessage}`); }
                 const updatedBook = await response.json();
                 const bookIndex = myBooks.findIndex(b => b.id === updatedBook.id);
-                if (bookIndex !== -1) {
-                    myBooks[bookIndex] = updatedBook;
-                } else { 
-                    myBooks.push(updatedBook);
-                }
-                renderBookshelves(); 
+                if (bookIndex !== -1) { myBooks[bookIndex] = updatedBook; } else { myBooks.push(updatedBook); }
+                renderBookshelves();
                 showMessage(`Book moved to "${newStatus.replace(/_/g, ' ')}"`, 'success');
-            } catch (error) {
-                console.error('Error updating book status:', error);
-                showMessage(`Error updating book: ${error.message}`, 'error');
-                fetchMyBooks(); 
-            }
+            } catch (error) { console.error('Error updating book status:', error); showMessage(`Error updating book: ${error.message}`, 'error'); fetchMyBooks(); }
         }
 
         // --- Rendering Functions ---
         function renderBookshelves() {
-            Object.values(shelves).forEach(shelfEl => shelfEl.innerHTML = ''); 
+            Object.values(shelves).forEach(shelfEl => shelfEl.innerHTML = ''); // Clear existing shelves
 
-            myBooks.forEach(book => {
+            // Sort books globally before rendering if in compact view,
+            // or apply sorting per shelf if needed (more complex for drag-drop consistency)
+            // For simplicity, we'll sort the `myBooks` array directly when sorting is active.
+            // This means all shelves will reflect the global sort order.
+            let booksToRender = [...myBooks]; // Create a copy to sort
+
+            if (isCompactView && currentSortColumn) {
+                 booksToRender.sort((a, b) => {
+                    let valA = a[currentSortColumn] || ''; // Handle undefined values for sorting
+                    let valB = b[currentSortColumn] || '';
+
+                    // Special handling for rating (numeric sort)
+                    if (currentSortColumn === 'rating') {
+                        valA = parseInt(a.rating) || 0; // Default to 0 if rating is null/undefined
+                        valB = parseInt(b.rating) || 0;
+                    } else if (typeof valA === 'string') { // Case-insensitive string sort
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+                    
+                    if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+
+            booksToRender.forEach(book => {
                 if (book.status && shelves[book.status]) {
-                    const card = createBookCard(book, false); 
-                    shelves[book.status].appendChild(card);
+                    const shelfEl = shelves[book.status];
+                    if (isCompactView) {
+                        // If it's the first book for this shelf in compact view, add table structure
+                        if (!shelfEl.querySelector('.bookshelf-table')) {
+                            shelfEl.classList.remove('space-y-4'); // Remove card spacing
+                            shelfEl.innerHTML = ''; // Clear any previous content (like "empty" message)
+                            const table = createShelfTableStructure(book.status);
+                            shelfEl.appendChild(table);
+                        }
+                        const tableBody = shelfEl.querySelector('tbody');
+                        if (tableBody) {
+                             const row = createBookTableRow(book);
+                             tableBody.appendChild(row);
+                        }
+                    } else {
+                        shelfEl.classList.add('space-y-4'); // Add card spacing back
+                        const card = createBookCard(book, false);
+                        shelfEl.appendChild(card);
+                    }
+                }
+            });
+
+            // If a shelf is empty in compact view after filtering/sorting, show an empty message within the table structure
+            if (isCompactView) {
+                Object.keys(shelves).forEach(statusKey => {
+                    const shelfEl = shelves[statusKey];
+                    const booksOnThisShelf = booksToRender.filter(b => b.status === statusKey);
+                    if (booksOnThisShelf.length === 0) {
+                        shelfEl.classList.remove('space-y-4');
+                        const table = createShelfTableStructure(statusKey); // Create header
+                        const tbody = table.querySelector('tbody');
+                        const emptyRow = tbody.insertRow();
+                        const cell = emptyRow.insertCell();
+                        cell.colSpan = 4; // Number of columns
+                        cell.textContent = 'No books on this shelf.';
+                        cell.className = 'text-center text-slate-500 py-4';
+                        shelfEl.innerHTML = ''; // Clear before adding table
+                        shelfEl.appendChild(table);
+                    } else {
+                        // Update sort icons on headers
+                        updateSortIcons(shelfEl.querySelector('table'));
+                    }
+                });
+            }
+        }
+        
+        function createShelfTableStructure(shelfStatus) {
+            const table = document.createElement('table');
+            table.className = 'bookshelf-table w-full';
+            const thead = table.createTHead();
+            const headerRow = thead.insertRow();
+            const headers = [
+                { key: 'title', text: 'Title' },
+                { key: 'author', text: 'Author' },
+                { key: 'rating', text: 'Rating' },
+                { key: 'series', text: 'Series (N/A)' } // Mark series as N/A for now
+            ];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.dataset.sortKey = header.key;
+                th.innerHTML = `${header.text} <span class="sort-icon" id="sort-icon-${shelfStatus}-${header.key}"></span>`;
+                th.onclick = () => handleSort(header.key);
+                headerRow.appendChild(th);
+            });
+            table.createTBody();
+            return table;
+        }
+
+        function updateSortIcons(tableElement) {
+            if (!tableElement) return;
+            const headers = tableElement.querySelectorAll('thead th[data-sort-key]');
+            headers.forEach(th => {
+                const key = th.dataset.sortKey;
+                const iconSpan = th.querySelector('.sort-icon');
+                if (iconSpan) {
+                    if (key === currentSortColumn) {
+                        iconSpan.innerHTML = currentSortDirection === 'asc' ? '▲' : '▼';
+                        iconSpan.classList.add('active');
+                    } else {
+                        iconSpan.innerHTML = '↕'; // Default icon for non-active sort columns
+                        iconSpan.classList.remove('active');
+                    }
                 }
             });
         }
 
+
+        function handleSort(sortKey) {
+            if (currentSortColumn === sortKey) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortColumn = sortKey;
+                currentSortDirection = 'asc';
+            }
+            renderBookshelves(); // Re-render with new sort order
+        }
+
+
         function renderSearchResults(results) {
+            // ... (existing renderSearchResults function - unchanged)
             searchResultsContainer.innerHTML = ''; 
-            if (!results || !Array.isArray(results) || results.length === 0) { // Check if results is an array
+            if (!results || !Array.isArray(results) || results.length === 0) {
                 searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">No books found for your query.</p>';
                 return;
             }
             results.forEach(bookData => {
-                // Normalize OpenLibrary data for consistency with createBookCard expectations
                 const normalizedBookData = {
                     title: bookData.title,
-                    authors: bookData.author_name, // createBookCard expects 'authors' or 'author_name'
+                    authors: bookData.author_name, 
                     author_name: bookData.author_name,
                     publication_year: bookData.first_publish_year,
-                    isbn_13: bookData.isbn, // Assuming isbn array might contain 13-digit
-                    isbn_10: bookData.isbn, // Assuming isbn array might contain 10-digit
+                    isbn_13: bookData.isbn, 
+                    isbn_10: bookData.isbn, 
                     page_count: bookData.number_of_pages_median,
-                    cover_image_url: bookData.cover_i ? `https://covers.openlibrary.org/b/id/${bookData.cover_i}-M.jpg` : null, // Medium size cover
-                    open_library_id: bookData.key ? bookData.key.replace("/works/", "") : null, // Extract OLID from key
-                    // Pass the original OL key for accurate identification if needed later
+                    cover_image_url: bookData.cover_i ? `https://covers.openlibrary.org/b/id/${bookData.cover_i}-M.jpg` : null, 
+                    open_library_id: bookData.key ? bookData.key.replace("/works/", "") : null, 
                     open_library_work_key: bookData.key 
                 };
-                if (!normalizedBookData.open_library_id && bookData.lending_edition_s) { // Fallback for OLID if key is missing
+                if (!normalizedBookData.open_library_id && bookData.lending_edition_s) { 
                     normalizedBookData.open_library_id = bookData.lending_edition_s;
                 }
-
-
                 const card = createBookCard(normalizedBookData, true); 
                 searchResultsContainer.appendChild(card);
             });
         }
 
-        // --- Drag and Drop Handlers ---
+        // --- Drag and Drop Handlers (Note: Drag and drop is implicitly disabled in compact/table view by not making rows draggable) ---
         function handleDragStart(event, book) {
-            if (!book || !book.id) {
-                console.error("Drag start on book with no ID:", book);
-                event.preventDefault(); 
-                return;
-            }
-            draggedBook = book; // Set the global draggedBook object
+            if (isCompactView) { event.preventDefault(); return; } // Prevent dragging in compact view
+            if (!book || !book.id) { event.preventDefault(); return; }
+            draggedBook = book;
             event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/plain', book.id.toString()); 
+            event.dataTransfer.setData('text/plain', book.id.toString());
             event.target.classList.add('opacity-50');
         }
-
-        function handleDragOver(event) {
-            event.preventDefault(); 
-            event.dataTransfer.dropEffect = 'move';
-            const targetShelf = event.target.closest('.shelf');
-            if (targetShelf) {
-                Object.values(shelves).forEach(s => s.classList.remove('drag-over'));
-                targetShelf.classList.add('drag-over');
-            }
-        }
-
-        function handleDragLeave(event) {
-            const targetShelf = event.target.closest('.shelf');
-            if (targetShelf && !targetShelf.contains(event.relatedTarget) && event.relatedTarget !== targetShelf) {
-                 targetShelf.classList.remove('drag-over');
-            } else if (!targetShelf) { // If leaving the general area of shelves
-                 Object.values(shelves).forEach(s => s.classList.remove('drag-over'));
-            }
-        }
-
+        function handleDragOver(event) { if (isCompactView) return; event.preventDefault(); event.dataTransfer.dropEffect = 'move'; const targetShelf = event.target.closest('.shelf'); if (targetShelf) { Object.values(shelves).forEach(s => s.classList.remove('drag-over')); targetShelf.classList.add('drag-over'); } }
+        function handleDragLeave(event) { if (isCompactView) return; const targetShelf = event.target.closest('.shelf'); if (targetShelf && !targetShelf.contains(event.relatedTarget) && event.relatedTarget !== targetShelf) { targetShelf.classList.remove('drag-over'); } else if (!targetShelf) { Object.values(shelves).forEach(s => s.classList.remove('drag-over')); } }
         function handleDrop(event) {
+            if (isCompactView) return;
             event.preventDefault();
             const targetShelfElement = event.target.closest('.shelf');
-            targetShelfElement.classList.remove('drag-over'); // Always remove drag-over class
+             if (targetShelfElement) targetShelfElement.classList.remove('drag-over'); // Remove class whether drop is valid or not
 
             if (targetShelfElement && draggedBook && draggedBook.id) {
                 const newStatus = targetShelfElement.dataset.status;
                 if (draggedBook.status !== newStatus) {
                     updateBookStatus(draggedBook.id, newStatus);
                 }
-            } else {
-                console.warn("Drop event occurred without a valid target shelf or dragged book ID.");
             }
             // draggedBook is cleared in handleDragEnd
         }
-
         function handleDragEnd(event) {
-            if (event.target.classList.contains('book-card')) {
-                 event.target.classList.remove('opacity-50');
-            }
+            if (isCompactView) return;
+            if (event.target.classList.contains('book-card')) { event.target.classList.remove('opacity-50'); }
             Object.values(shelves).forEach(shelfEl => shelfEl.classList.remove('drag-over'));
-            draggedBook = null; // CRITICAL: Clear draggedBook here
+            draggedBook = null;
         }
 
         // --- Event Listeners ---
-        searchButton.addEventListener('click', () => {
-            performSearch(searchInput.value);
-        });
-        searchInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                performSearch(searchInput.value);
-            }
-        });
+        searchButton.addEventListener('click', () => performSearch(searchInput.value));
+        searchInput.addEventListener('keypress', (event) => { if (event.key === 'Enter') performSearch(searchInput.value); });
 
         Object.values(shelves).forEach(shelfEl => {
             shelfEl.addEventListener('dragover', handleDragOver);
@@ -644,119 +623,78 @@
         });
         document.addEventListener('dragend', handleDragEnd);
 
+        toggleViewBtn.addEventListener('click', () => {
+            isCompactView = !isCompactView;
+            if (isCompactView) {
+                viewToggleText.textContent = 'Card View';
+                viewToggleIcon.innerHTML = listViewIconSVG; // Show list icon when in compact (table) view
+                // Disable drag and drop for section if needed, or ensure table rows are not draggable
+                document.getElementById('bookshelves-section').classList.remove('md:grid-cols-3');
+                document.getElementById('bookshelves-section').classList.add('space-y-8'); // Stack shelves vertically
+            } else {
+                viewToggleText.textContent = 'Compact View';
+                viewToggleIcon.innerHTML = cardViewIconSVG; // Show card icon
+                document.getElementById('bookshelves-section').classList.add('md:grid-cols-3');
+                document.getElementById('bookshelves-section').classList.remove('space-y-8');
+            }
+            renderBookshelves(); // Re-render with the new view
+        });
 
         // --- Book Details Modal Functions ---
-        let currentBookForModal = null; // Store the whole book object for the modal
-
+        let currentBookForModal = null;
         function openBookDetailsModal(book) {
-            // console.log('Opening modal for book:', book); 
-            currentBookForModal = book; // Store the book object
+            // console.log('Opening modal for book:', book);
+            currentBookForModal = book;
             document.getElementById('modalBookTitle').textContent = book.title || 'N/A';
-            
-            // Determine author string for modal
             let authorForModal = 'Unknown Author';
-            if (book.author) { // From DB
-                authorForModal = book.author;
-            } else if (Array.isArray(book.authors)) { // From search (OpenLibrary)
-                 authorForModal = book.authors.join(', ');
-            } else if (book.author_name) { // From search (OpenLibrary, can be string or array)
-                authorForModal = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name;
-            }
+            if (book.author) { authorForModal = book.author; }
+            else if (Array.isArray(book.authors)) { authorForModal = book.authors.join(', '); }
+            else if (book.author_name) { authorForModal = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name; }
             document.getElementById('modalBookAuthor').textContent = `By ${authorForModal}`;
             
             document.querySelectorAll('input[name="rating"]').forEach(input => input.checked = false);
             document.querySelectorAll('input[name="book_type"]').forEach(input => input.checked = false);
             document.getElementById('comments').value = '';
             
-            if (book.rating) {
-                const ratingInput = document.querySelector(`input[name="rating"][value="${book.rating}"]`);
-                if (ratingInput) ratingInput.checked = true;
-            }
-            if (book.book_type) {
-                const typeInput = document.querySelector(`input[name="book_type"][value="${book.book_type}"]`);
-                if (typeInput) typeInput.checked = true;
-            } else {
-                document.querySelector('input[name="book_type"][value="physical_book"]').checked = true; // Default
-            }
-            if (book.comments) {
-                document.getElementById('comments').value = book.comments;
-            }
+            if (book.rating) { const ratingInput = document.querySelector(`input[name="rating"][value="${book.rating}"]`); if (ratingInput) ratingInput.checked = true; }
+            if (book.book_type) { const typeInput = document.querySelector(`input[name="book_type"][value="${book.book_type}"]`); if (typeInput) typeInput.checked = true; }
+            else { document.querySelector('input[name="book_type"][value="physical_book"]').checked = true; }
+            if (book.comments) { document.getElementById('comments').value = book.comments; }
             
-            const modal = document.getElementById('bookDetailsModal');
-            modal.classList.remove('hidden');
+            document.getElementById('bookDetailsModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
-
-        function closeBookDetailsModal() {
-            document.getElementById('bookDetailsModal').classList.add('hidden');
-            document.body.style.overflow = '';
-            currentBookForModal = null; // Clear the stored book
-        }
-
+        function closeBookDetailsModal() { document.getElementById('bookDetailsModal').classList.add('hidden'); document.body.style.overflow = ''; currentBookForModal = null; }
         async function saveBookDetails() {
-            if (!currentBookForModal || !currentBookForModal.id) { // Check for book and its ID
-                showMessage('No book selected or book has no ID to save details.', 'error');
-                return;
-            }
-
+            if (!currentBookForModal || !currentBookForModal.id) { showMessage('No book selected or book has no ID to save details.', 'error'); return; }
             const rating = document.querySelector('input[name="rating"]:checked')?.value;
             const bookType = document.querySelector('input[name="book_type"]:checked')?.value;
             const comments = document.getElementById('comments').value;
-
             try {
-                const response = await fetch(`${API_BASE_URL}/books/${currentBookForModal.id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        book: {
-                            rating: rating ? parseInt(rating) : null,
-                            book_type: bookType,
-                            comments: comments
-                        }
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
-                    throw new Error(`Failed to update book details: ${errorMessage}`);
-                }
-                
+                const response = await fetch(`${API_BASE_URL}/books/${currentBookForModal.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ book: { rating: rating ? parseInt(rating) : null, book_type: bookType, comments: comments } }) });
+                if (!response.ok) { const errorData = await response.json(); const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`; throw new Error(`Failed to update book details: ${errorMessage}`); }
                 const updatedBook = await response.json();
                 const bookIndex = myBooks.findIndex(b => b.id === updatedBook.id);
-                if (bookIndex !== -1) {
-                    myBooks[bookIndex] = updatedBook;
-                }
-                
+                if (bookIndex !== -1) { myBooks[bookIndex] = updatedBook; }
                 renderBookshelves();
                 showMessage('Book details updated successfully!', 'success');
                 closeBookDetailsModal();
-            } catch (error) {
-                console.error('Error updating book details:', error);
-                showMessage(`Error updating book details: ${error.message}`, 'error');
-            }
+            } catch (error) { console.error('Error updating book details:', error); showMessage(`Error updating book details: ${error.message}`, 'error'); }
         }
-
         document.getElementById('closeModalBtn').addEventListener('click', closeBookDetailsModal);
         document.getElementById('cancelBtn').addEventListener('click', closeBookDetailsModal);
         document.getElementById('saveDetailsBtn').addEventListener('click', saveBookDetails);
-
-        document.getElementById('bookDetailsModal').addEventListener('click', (event) => {
-            if (event.target === document.getElementById('bookDetailsModal')) {
-                closeBookDetailsModal();
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && !document.getElementById('bookDetailsModal').classList.contains('hidden')) {
-                closeBookDetailsModal();
-            }
-        });
+        document.getElementById('bookDetailsModal').addEventListener('click', (event) => { if (event.target === document.getElementById('bookDetailsModal')) closeBookDetailsModal(); });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !document.getElementById('bookDetailsModal').classList.contains('hidden')) closeBookDetailsModal(); });
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             fetchMyBooks();
             searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">Search for books to add to your shelves.</p>';
+            // Set initial view button state
+            viewToggleIcon.innerHTML = cardViewIconSVG;
+            viewToggleText.textContent = 'Compact View';
+
         });
     </script>
 </body>
