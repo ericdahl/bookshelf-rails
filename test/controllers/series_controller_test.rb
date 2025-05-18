@@ -17,7 +17,7 @@ class SeriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create series" do
     assert_difference("Series.count") do
-      post series_index_url, params: { series: { description: @series.description, name: @series.name } }
+      post series_index_url, params: { series: { name: "Unique Test Series", description: "A unique test series for creation." } }
     end
 
     assert_redirected_to series_url(Series.last)

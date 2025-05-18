@@ -65,6 +65,6 @@ class SeriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def series_params
-      params.expect(series: [ :name, :description ])
+      params.require(:series).permit(:name, :description)
     end
 end

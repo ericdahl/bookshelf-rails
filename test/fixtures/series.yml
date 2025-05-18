@@ -15,3 +15,7 @@ empty_series:
 long_description_series:
   name: "Long Description Series"
   description: "A series with a very long description that might test any length constraints in the application. This description goes on and on to ensure we can handle longer text fields properly."
+
+one:
+  name: "Test Series One"
+  description: "A test series for controller tests."
