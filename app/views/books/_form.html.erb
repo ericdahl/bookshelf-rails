@@ -11,7 +11,63 @@
     </div>
   <% end %>
 
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <%= form.label :title %>
+    <%= form.text_field :title, class: "form-input" %>
+
+    <%= form.label :author %>
+    <%= form.text_field :author, class: "form-input" %>
+
+    <%= form.label :isbn_10 %>
+    <%= form.text_field :isbn_10, class: "form-input" %>
+
+    <%= form.label :isbn_13 %>
+    <%= form.text_field :isbn_13, class: "form-input" %>
+
+    <%= form.label :publication_year %>
+    <%= form.number_field :publication_year, class: "form-input" %>
+
+    <%= form.label :publisher %>
+    <%= form.text_field :publisher, class: "form-input" %>
+
+    <%= form.label :page_count %>
+    <%= form.number_field :page_count, class: "form-input" %>
+
+    <%= form.label :description %>
+    <%= form.text_area :description, class: "form-input" %>
+
+    <%= form.label :cover_image_url %>
+    <%= form.text_field :cover_image_url, class: "form-input" %>
+
+    <%= form.label :open_library_id %>
+    <%= form.text_field :open_library_id, class: "form-input" %>
+
+    <%= form.label :series_id %>
+    <%= form.collection_select :series_id, Series.all, :id, :name, { include_blank: true }, { class: "form-input" } %>
+
+    <%= form.label :status %>
+    <%= form.select :status, Book.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "form-input" %>
+
+    <%= form.label :rating %>
+    <%= form.number_field :rating, in: 1..10, class: "form-input" %>
+
+    <%= form.label :comments %>
+    <%= form.text_area :comments, class: "form-input" %>
+
+    <%= form.label :book_type %>
+    <%= form.select :book_type, Book.book_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-input" %>
+
+    <%= form.label :date_added %>
+    <%= form.datetime_select :date_added, class: "form-input" %>
+
+    <%= form.label :date_started %>
+    <%= form.datetime_select :date_started, class: "form-input" %>
+
+    <%= form.label :date_finished %>
+    <%= form.datetime_select :date_finished, class: "form-input" %>
+  </div>
+
   <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= form.submit "Update Book", class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>
 <% end %>
