@@ -88,6 +88,42 @@
             color: #e2e8f0; /* slate-200 */
             cursor: not-allowed;
         }
+        /* Star rating styling */
+        .star-rating {
+            display: inline-flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+        .star-rating label {
+            font-size: 1.5rem;
+            color: #d1d5db;
+            cursor: pointer;
+            padding: 0 0.125rem;
+            transition: color 0.2s ease-in-out;
+        }
+        .star-rating input[type="radio"]:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #f59e0b;
+        }
+        .star-rating input[type="radio"]:not(:checked) ~ label:hover,
+        .star-rating input[type="radio"]:not(:checked) ~ label:hover ~ label {
+            color: #f59e0b;
+        }
+        /* Modal scrollbar styling */
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background-color: #f1f5f9;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -110,6 +146,73 @@
             <div id="search-results-container" class="space-y-4 max-h-[50vh] overflow-y-auto">
                 </div>
         </section>
+
+        <div id="bookDetailsModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800" id="modalBookTitle">Book Title</h3>
+                            <p class="text-sm text-gray-500" id="modalBookAuthor">By Author Name</p>
+                        </div>
+                        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-6 modal-content max-h-[calc(100vh-200px)] overflow-y-auto">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">My Rating (1-10)</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star10" name="rating" value="10" /><label for="star10" title="10 stars">★</label>
+                            <input type="radio" id="star9" name="rating" value="9" /><label for="star9" title="9 stars">★</label>
+                            <input type="radio" id="star8" name="rating" value="8" /><label for="star8" title="8 stars">★</label>
+                            <input type="radio" id="star7" name="rating" value="7" /><label for="star7" title="7 stars">★</label>
+                            <input type="radio" id="star6" name="rating" value="6" /><label for="star6" title="6 stars">★</label>
+                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 stars">★</label>
+                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label>
+                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label>
+                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label>
+                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Book Type</label>
+                        <div class="flex items-center space-x-4">
+                            <label for="formatBook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
+                                <input type="radio" id="formatBook" name="book_type" value="physical_book" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-gray-700">Physical Book</span>
+                            </label>
+                            <label for="formatAudiobook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
+                                <input type="radio" id="formatAudiobook" name="book_type" value="audiobook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-gray-700">Audiobook</span>
+                            </label>
+                            <label for="formatEbook" class="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100">
+                                <input type="radio" id="formatEbook" name="book_type" value="ebook" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                <span class="text-gray-700">E-book</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="comments" class="block text-sm font-medium text-gray-700">Comments / Review</label>
+                        <textarea id="comments" name="comments" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5" placeholder="What did you think of this book? (Optional)"></textarea>
+                        <p class="mt-1 text-xs text-gray-500">Your comments will be private unless you choose to share them.</p>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" id="cancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                        Cancel
+                    </button>
+                    <button type="button" id="saveDetailsBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                        Save Details
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <section id="bookshelves-section" class="grid md:grid-cols-3 gap-x-6 gap-y-8">
             <div id="shelf-want_to_read" class="shelf-container">
@@ -175,12 +278,23 @@
         function createBookCard(book, isSearchResult = false) {
             const card = document.createElement('div');
             card.className = `book-card bg-white p-4 rounded-lg shadow-md border border-slate-200 ${isSearchResult ? 'search-result-card' : ''}`;
-            // Use book.id if it's a book from our database, otherwise use book.open_library_id for search results
-            card.dataset.bookDbId = book.id; // This will be set for books from our DB
-            card.dataset.bookOlid = book.open_library_id; // This will be set for search results and our DB books if available
+            card.dataset.bookDbId = book.id; // This will be undefined for new books from search results until saved
+            card.dataset.bookOlid = book.open_library_id;
 
             const title = book.title || 'No Title';
-            const authors = Array.isArray(book.authors) ? book.authors.join(', ') : (book.author_name || book.author || 'Unknown Author');
+            // Ensure authors is treated as a string for display.
+            // For books from your DB, 'book.author' should be the string.
+            // For OpenLibrary results, 'book.authors' might be an array, or 'book.author_name'.
+            let displayAuthors = 'Unknown Author';
+            if (book.author) { // From your DB
+                displayAuthors = book.author;
+            } else if (Array.isArray(book.authors)) { // OpenLibrary array
+                 displayAuthors = book.authors.join(', ');
+            } else if (book.author_name) { // OpenLibrary string or array
+                displayAuthors = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name;
+            }
+
+
             const coverUrl = book.cover_image_url || book.cover_image_url_medium || book.cover_image_url_large || `https://placehold.co/80x120/e2e8f0/64748b?text=${encodeURIComponent(title.substring(0,10))}`;
 
             card.innerHTML = `
@@ -188,22 +302,23 @@
                     <img src="${coverUrl}" alt="Cover of ${title}" class="w-20 h-30 object-cover rounded shadow-sm flex-shrink-0" onerror="this.onerror=null;this.src='https://placehold.co/80x120/e2e8f0/64748b?text=No+Cover';">
                     <div class="flex-grow">
                         <h3 class="font-semibold text-lg text-slate-700">${title}</h3>
-                        <p class="text-sm text-slate-500 mb-1">By: ${authors}</p>
+                        <p class="text-sm text-slate-500 mb-1">By: ${displayAuthors}</p>
                         ${book.publication_year ? `<p class="text-xs text-slate-400">Published: ${book.publication_year}</p>` : ''}
                         ${!isSearchResult && book.rating ? `<p class="text-xs text-slate-400">Rating: ${book.rating}/10</p>` : ''}
+                        ${!isSearchResult && book.book_type ? `<p class="text-xs text-slate-400">Format: ${book.book_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>` : ''}
                         ${!isSearchResult && book.comments ? `<p class="text-xs text-slate-400 mt-1 italic">"${book.comments}"</p>` : ''}
                     </div>
                 </div>
             `;
 
             if (isSearchResult) {
-                // Check if the book from search results is already in our local 'myBooks' cache
-                const existingBook = myBooks.find(b => 
+                const existingBook = myBooks.find(b =>
                     b.open_library_id === book.open_library_id ||
                     (b.isbn_13 && book.isbn_13 && b.isbn_13 === book.isbn_13) ||
                     (b.isbn_10 && book.isbn_10 && b.isbn_10 === book.isbn_10) ||
-                    (b.title.toLowerCase() === book.title.toLowerCase() && (Array.isArray(b.authors) ? b.authors.join(', ') : b.author).toLowerCase() === authors.toLowerCase())
+                    (b.title.toLowerCase() === book.title.toLowerCase() && (b.author || '').toLowerCase() === displayAuthors.toLowerCase())
                 );
+
 
                 if (existingBook) {
                     const statusButton = document.createElement('button');
@@ -212,52 +327,54 @@
                     statusButton.disabled = true;
                     card.appendChild(statusButton);
                 } else {
-                    // Create quick-add buttons container
                     const quickAddContainer = document.createElement('div');
                     quickAddContainer.className = 'mt-3 flex gap-2';
                     
-                    // Create the three quick-add buttons
                     const buttons = [
-                        {
-                            status: 'want_to_read',
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                  </svg>`,
-                            text: 'Want to Read',
-                            color: 'amber'
-                        },
-                        {
-                            status: 'currently_reading',
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                                  </svg>`,
-                            text: 'Reading',
-                            color: 'teal'
-                        },
-                        {
-                            status: 'read',
-                            icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                  </svg>`,
-                            text: 'Read',
-                            color: 'indigo'
-                        }
+                        { status: 'want_to_read', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>`, text: 'Want to Read', color: 'amber'},
+                        { status: 'currently_reading', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>`, text: 'Reading', color: 'teal'},
+                        { status: 'read', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`, text: 'Read', color: 'indigo'}
                     ];
 
                     buttons.forEach(({ status, icon, text, color }) => {
                         const button = document.createElement('button');
                         button.className = `btn flex-1 flex items-center justify-center gap-1 text-xs px-2 py-1.5 bg-${color}-50 hover:bg-${color}-100 text-${color}-700 border border-${color}-200 hover:border-${color}-300 transition-colors`;
                         button.innerHTML = `${icon}${text}`;
-                        button.onclick = () => addBookToShelf(book, status);
+                        button.onclick = (e) => {
+                            e.stopPropagation(); // Prevent card click if button is clicked
+                            addBookToShelf(book, status);
+                        };
                         quickAddContainer.appendChild(button);
                     });
-                    
                     card.appendChild(quickAddContainer);
                 }
             } else {
-                // Make bookshelf cards draggable (only for books already on shelves)
+                // This is a book on a shelf
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', (e) => {
+                    // Only prevent modal if a drag operation is currently active.
+                    // The `draggedBook` variable is set during dragstart and cleared on dragend/drop.
+                    if (draggedBook) {
+                        // console.log('Modal opening prevented: drag operation active.');
+                        return;
+                    }
+                    // Check if the click target is one of the quick add buttons (should not happen here, but good practice)
+                    if (e.target.closest('.btn')) {
+                        return;
+                    }
+                    
+                    // console.log('Shelf book card clicked, opening modal for:', book); // For debugging
+                    // e.preventDefault(); // Not strictly necessary unless the card is a link
+                    openBookDetailsModal(book);
+                });
+                
                 card.draggable = true;
-                card.ondragstart = (event) => handleDragStart(event, book);
+                card.ondragstart = (event) => {
+                    // event.stopPropagation(); // This can sometimes interfere with the click event not firing after drag.
+                                            // Let's test without it first, as draggedBook check should suffice.
+                                            // The main goal is to set draggedBook.
+                    handleDragStart(event, book);
+                };
             }
             return card;
         }
@@ -282,6 +399,12 @@
             }
             searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center animate-pulse">Searching...</p>';
             try {
+                // Construct authors from OpenLibrary's author_name field for the payload
+                let authorsForPayload = bookDataFromSearch.author_name;
+                if (Array.isArray(authorsForPayload)) {
+                    authorsForPayload = authorsForPayload.join(', ');
+                }
+
                 const response = await fetch(`${API_BASE_URL}/search?query=${encodeURIComponent(query)}`);
                 if (!response.ok) throw new Error(`Search failed: ${response.status} ${response.statusText}`);
                 const results = await response.json();
@@ -295,23 +418,42 @@
 
         async function addBookToShelf(bookDataFromSearch, newStatus) {
             // Prepare data for our Book model
+            // Ensure author is a string, as expected by Rails backend
+            let authorString = 'Unknown Author';
+            if (Array.isArray(bookDataFromSearch.authors)) { // From some search APIs
+                authorString = bookDataFromSearch.authors.join(', ');
+            } else if (bookDataFromSearch.authors) { // String from some search APIs
+                authorString = bookDataFromSearch.authors;
+            } else if (Array.isArray(bookDataFromSearch.author_name)) { // From OpenLibrary
+                authorString = bookDataFromSearch.author_name.join(', ');
+            } else if (bookDataFromSearch.author_name) { // String from OpenLibrary
+                authorString = bookDataFromSearch.author_name;
+            }
+
+
             const newBookPayload = {
                 book: {
                     title: bookDataFromSearch.title,
-                    // Ensure author is a string, as expected by some backend setups
-                    author: Array.isArray(bookDataFromSearch.authors) ? bookDataFromSearch.authors.join(', ') : bookDataFromSearch.authors,
-                    isbn_13: bookDataFromSearch.isbn_13,
-                    isbn_10: bookDataFromSearch.isbn_10,
-                    publication_year: bookDataFromSearch.publication_year,
-                    page_count: bookDataFromSearch.page_count,
-                    // Use the specific cover image URL from search result if available
-                    cover_image_url: bookDataFromSearch.cover_image_url_large || bookDataFromSearch.cover_image_url_medium || bookDataFromSearch.cover_image_url,
-                    open_library_id: bookDataFromSearch.open_library_id,
+                    author: authorString,
+                    isbn_13: bookDataFromSearch.isbn_13 ? bookDataFromSearch.isbn_13[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn[0] : null), // OL often returns arrays
+                    isbn_10: bookDataFromSearch.isbn_10 ? bookDataFromSearch.isbn_10[0] : (bookDataFromSearch.isbn ? bookDataFromSearch.isbn.find(i => i.length === 10) : null), // OL often returns arrays
+                    publication_year: bookDataFromSearch.first_publish_year || bookDataFromSearch.publication_year, // OL uses first_publish_year
+                    page_count: bookDataFromSearch.number_of_pages_median || bookDataFromSearch.page_count, // OL uses number_of_pages_median
+                    cover_image_url: bookDataFromSearch.cover_i ? `https://covers.openlibrary.org/b/id/${bookDataFromSearch.cover_i}-L.jpg` : (bookDataFromSearch.cover_image_url || null), // OL uses cover_i
+                    open_library_id: bookDataFromSearch.key ? bookDataFromSearch.key.replace("/works/", "") : bookDataFromSearch.open_library_id, // OL uses key
                     status: newStatus,
-                    book_type: 'physical_book', // Default, could be made selectable
+                    book_type: 'physical_book', // Default
                     date_added: new Date().toISOString()
                 }
             };
+            
+            // Clean up undefined fields to avoid sending them as null if not desired by backend
+            for (const key in newBookPayload.book) {
+                if (newBookPayload.book[key] === undefined) {
+                    delete newBookPayload.book[key];
+                }
+            }
+
 
             try {
                 const response = await fetch(`${API_BASE_URL}/books`, {
@@ -320,26 +462,31 @@
                     body: JSON.stringify(newBookPayload)
                 });
                 if (!response.ok) {
-                    const errorData = await response.json(); // Attempt to parse error response from Rails
+                    const errorData = await response.json(); 
                     const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
                     throw new Error(`Failed to add book: ${errorMessage}`);
                 }
                 const addedBook = await response.json();
-                myBooks.push(addedBook); // Add to local cache
-                renderBookshelves(); // Re-render shelves
+                myBooks.push(addedBook); 
+                renderBookshelves(); 
                 showMessage(`"${addedBook.title}" added to "${newStatus.replace(/_/g, ' ')}"`, 'success');
                 
-                // Update the search result button for this book
-                // Use the open_library_id from the original search data to find the card
-                const searchResultCard = document.querySelector(`[data-book-olid="${bookDataFromSearch.open_library_id}"]`);
+                // Update the search result card to show it's on a shelf
+                const olIdToFind = bookDataFromSearch.key ? bookDataFromSearch.key.replace("/works/", "") : bookDataFromSearch.open_library_id;
+                const searchResultCard = document.querySelector(`[data-book-olid="${olIdToFind}"]`);
+
                 if (searchResultCard) {
-                    const button = searchResultCard.querySelector('button');
-                    if (button) {
-                        button.textContent = `On Shelf (${newStatus.replace(/_/g, ' ')})`;
-                        button.className = 'btn btn-disabled mt-3 w-full text-xs';
-                        button.disabled = true;
+                    const quickAddContainer = searchResultCard.querySelector('.flex.gap-2'); // The container of quick add buttons
+                    if (quickAddContainer) {
+                        quickAddContainer.innerHTML = ''; // Clear buttons
+                        const statusButton = document.createElement('button');
+                        statusButton.textContent = `On Shelf (${newStatus.replace(/_/g, ' ')})`;
+                        statusButton.className = 'btn btn-disabled mt-0 w-full text-xs'; // Adjusted mt-0 as it's replacing buttons
+                        statusButton.disabled = true;
+                        quickAddContainer.appendChild(statusButton);
                     }
                 }
+
 
             } catch (error) {
                 console.error('Error adding book:', error);
@@ -348,11 +495,9 @@
         }
 
         async function updateBookStatus(bookId, newStatus) {
-            // Ensure bookId is valid
             if (!bookId) {
                 console.error('updateBookStatus called with invalid bookId:', bookId);
                 showMessage('Could not update book: Invalid book ID.', 'error');
-                // Re-fetch books to ensure UI consistency if something went wrong with drag data
                 fetchMyBooks();
                 return;
             }
@@ -368,29 +513,28 @@
                     throw new Error(`Failed to update book status: ${errorMessage}`);
                 }
                 const updatedBook = await response.json();
-                // Update local cache
                 const bookIndex = myBooks.findIndex(b => b.id === updatedBook.id);
                 if (bookIndex !== -1) {
                     myBooks[bookIndex] = updatedBook;
                 } else { 
-                    myBooks.push(updatedBook); // Should ideally be an update
+                    myBooks.push(updatedBook);
                 }
-                renderBookshelves(); // Re-render to reflect change
+                renderBookshelves(); 
                 showMessage(`Book moved to "${newStatus.replace(/_/g, ' ')}"`, 'success');
             } catch (error) {
                 console.error('Error updating book status:', error);
                 showMessage(`Error updating book: ${error.message}`, 'error');
-                fetchMyBooks(); // Re-fetch to correct any UI inconsistencies
+                fetchMyBooks(); 
             }
         }
 
         // --- Rendering Functions ---
         function renderBookshelves() {
-            Object.values(shelves).forEach(shelfEl => shelfEl.innerHTML = ''); // Clear existing shelves
+            Object.values(shelves).forEach(shelfEl => shelfEl.innerHTML = ''); 
 
             myBooks.forEach(book => {
                 if (book.status && shelves[book.status]) {
-                    const card = createBookCard(book, false); // false because it's on a bookshelf
+                    const card = createBookCard(book, false); 
                     shelves[book.status].appendChild(card);
                 }
             });
@@ -398,16 +542,31 @@
 
         function renderSearchResults(results) {
             searchResultsContainer.innerHTML = ''; 
-            if (!results || results.length === 0) {
+            if (!results || !Array.isArray(results) || results.length === 0) { // Check if results is an array
                 searchResultsContainer.innerHTML = '<p class="text-slate-500 text-center">No books found for your query.</p>';
                 return;
             }
             results.forEach(bookData => {
-                // Ensure bookData has open_library_id for search results
-                if (!bookData.open_library_id) {
-                    console.warn("Search result missing open_library_id:", bookData);
+                // Normalize OpenLibrary data for consistency with createBookCard expectations
+                const normalizedBookData = {
+                    title: bookData.title,
+                    authors: bookData.author_name, // createBookCard expects 'authors' or 'author_name'
+                    author_name: bookData.author_name,
+                    publication_year: bookData.first_publish_year,
+                    isbn_13: bookData.isbn, // Assuming isbn array might contain 13-digit
+                    isbn_10: bookData.isbn, // Assuming isbn array might contain 10-digit
+                    page_count: bookData.number_of_pages_median,
+                    cover_image_url: bookData.cover_i ? `https://covers.openlibrary.org/b/id/${bookData.cover_i}-M.jpg` : null, // Medium size cover
+                    open_library_id: bookData.key ? bookData.key.replace("/works/", "") : null, // Extract OLID from key
+                    // Pass the original OL key for accurate identification if needed later
+                    open_library_work_key: bookData.key 
+                };
+                if (!normalizedBookData.open_library_id && bookData.lending_edition_s) { // Fallback for OLID if key is missing
+                    normalizedBookData.open_library_id = bookData.lending_edition_s;
                 }
-                const card = createBookCard(bookData, true); // true because it's a search result
+
+
+                const card = createBookCard(normalizedBookData, true); 
                 searchResultsContainer.appendChild(card);
             });
         }
@@ -416,12 +575,12 @@
         function handleDragStart(event, book) {
             if (!book || !book.id) {
                 console.error("Drag start on book with no ID:", book);
-                event.preventDefault(); // Prevent dragging invalid item
+                event.preventDefault(); 
                 return;
             }
-            draggedBook = book;
+            draggedBook = book; // Set the global draggedBook object
             event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/plain', book.id.toString()); // Ensure it's a string
+            event.dataTransfer.setData('text/plain', book.id.toString()); 
             event.target.classList.add('opacity-50');
         }
 
@@ -430,7 +589,6 @@
             event.dataTransfer.dropEffect = 'move';
             const targetShelf = event.target.closest('.shelf');
             if (targetShelf) {
-                // Remove from other shelves first to avoid multiple highlights
                 Object.values(shelves).forEach(s => s.classList.remove('drag-over'));
                 targetShelf.classList.add('drag-over');
             }
@@ -438,17 +596,19 @@
 
         function handleDragLeave(event) {
             const targetShelf = event.target.closest('.shelf');
-            // Check if the mouse is leaving the shelf for real, not just moving over a child element
-            if (targetShelf && !targetShelf.contains(event.relatedTarget)) {
-                targetShelf.classList.remove('drag-over');
+            if (targetShelf && !targetShelf.contains(event.relatedTarget) && event.relatedTarget !== targetShelf) {
+                 targetShelf.classList.remove('drag-over');
+            } else if (!targetShelf) { // If leaving the general area of shelves
+                 Object.values(shelves).forEach(s => s.classList.remove('drag-over'));
             }
         }
 
         function handleDrop(event) {
             event.preventDefault();
             const targetShelfElement = event.target.closest('.shelf');
+            targetShelfElement.classList.remove('drag-over'); // Always remove drag-over class
+
             if (targetShelfElement && draggedBook && draggedBook.id) {
-                targetShelfElement.classList.remove('drag-over');
                 const newStatus = targetShelfElement.dataset.status;
                 if (draggedBook.status !== newStatus) {
                     updateBookStatus(draggedBook.id, newStatus);
@@ -456,20 +616,16 @@
             } else {
                 console.warn("Drop event occurred without a valid target shelf or dragged book ID.");
             }
-            // Clear draggedBook regardless of successful drop to prevent issues
-            draggedBook = null; 
+            // draggedBook is cleared in handleDragEnd
         }
 
         function handleDragEnd(event) {
-            // This event fires on the source element after the drag operation.
             if (event.target.classList.contains('book-card')) {
                  event.target.classList.remove('opacity-50');
             }
-            // Clean up any visual cues from all shelves
             Object.values(shelves).forEach(shelfEl => shelfEl.classList.remove('drag-over'));
-            draggedBook = null; // Ensure draggedBook is cleared
+            draggedBook = null; // CRITICAL: Clear draggedBook here
         }
-
 
         // --- Event Listeners ---
         searchButton.addEventListener('click', () => {
@@ -485,11 +641,117 @@
             shelfEl.addEventListener('dragover', handleDragOver);
             shelfEl.addEventListener('dragleave', handleDragLeave);
             shelfEl.addEventListener('drop', handleDrop);
-            // dragend should be on the draggable items themselves or document, not the drop targets
         });
-        // Add dragend to the document to catch it even if the drop is outside a valid target
         document.addEventListener('dragend', handleDragEnd);
 
+
+        // --- Book Details Modal Functions ---
+        let currentBookForModal = null; // Store the whole book object for the modal
+
+        function openBookDetailsModal(book) {
+            // console.log('Opening modal for book:', book); 
+            currentBookForModal = book; // Store the book object
+            document.getElementById('modalBookTitle').textContent = book.title || 'N/A';
+            
+            // Determine author string for modal
+            let authorForModal = 'Unknown Author';
+            if (book.author) { // From DB
+                authorForModal = book.author;
+            } else if (Array.isArray(book.authors)) { // From search (OpenLibrary)
+                 authorForModal = book.authors.join(', ');
+            } else if (book.author_name) { // From search (OpenLibrary, can be string or array)
+                authorForModal = Array.isArray(book.author_name) ? book.author_name.join(', ') : book.author_name;
+            }
+            document.getElementById('modalBookAuthor').textContent = `By ${authorForModal}`;
+            
+            document.querySelectorAll('input[name="rating"]').forEach(input => input.checked = false);
+            document.querySelectorAll('input[name="book_type"]').forEach(input => input.checked = false);
+            document.getElementById('comments').value = '';
+            
+            if (book.rating) {
+                const ratingInput = document.querySelector(`input[name="rating"][value="${book.rating}"]`);
+                if (ratingInput) ratingInput.checked = true;
+            }
+            if (book.book_type) {
+                const typeInput = document.querySelector(`input[name="book_type"][value="${book.book_type}"]`);
+                if (typeInput) typeInput.checked = true;
+            } else {
+                document.querySelector('input[name="book_type"][value="physical_book"]').checked = true; // Default
+            }
+            if (book.comments) {
+                document.getElementById('comments').value = book.comments;
+            }
+            
+            const modal = document.getElementById('bookDetailsModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBookDetailsModal() {
+            document.getElementById('bookDetailsModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            currentBookForModal = null; // Clear the stored book
+        }
+
+        async function saveBookDetails() {
+            if (!currentBookForModal || !currentBookForModal.id) { // Check for book and its ID
+                showMessage('No book selected or book has no ID to save details.', 'error');
+                return;
+            }
+
+            const rating = document.querySelector('input[name="rating"]:checked')?.value;
+            const bookType = document.querySelector('input[name="book_type"]:checked')?.value;
+            const comments = document.getElementById('comments').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/books/${currentBookForModal.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        book: {
+                            rating: rating ? parseInt(rating) : null,
+                            book_type: bookType,
+                            comments: comments
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMessage = errorData.errors ? JSON.stringify(errorData.errors) : `Server error ${response.status}`;
+                    throw new Error(`Failed to update book details: ${errorMessage}`);
+                }
+                
+                const updatedBook = await response.json();
+                const bookIndex = myBooks.findIndex(b => b.id === updatedBook.id);
+                if (bookIndex !== -1) {
+                    myBooks[bookIndex] = updatedBook;
+                }
+                
+                renderBookshelves();
+                showMessage('Book details updated successfully!', 'success');
+                closeBookDetailsModal();
+            } catch (error) {
+                console.error('Error updating book details:', error);
+                showMessage(`Error updating book details: ${error.message}`, 'error');
+            }
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', closeBookDetailsModal);
+        document.getElementById('cancelBtn').addEventListener('click', closeBookDetailsModal);
+        document.getElementById('saveDetailsBtn').addEventListener('click', saveBookDetails);
+
+        document.getElementById('bookDetailsModal').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('bookDetailsModal')) {
+                closeBookDetailsModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !document.getElementById('bookDetailsModal').classList.contains('hidden')) {
+                closeBookDetailsModal();
+            }
+        });
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
