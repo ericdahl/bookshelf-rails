@@ -21,4 +21,10 @@ Rails.application.routes.draw do
       get "search", to: "open_library_searches#search"
     end
   end
+
+  resources :books do
+    member do
+      patch :update_status
+    end
+  end
 end

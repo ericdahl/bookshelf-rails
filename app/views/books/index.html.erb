@@ -1,6 +1,6 @@
 <% content_for :title, "Books" %>
 
-<div class="w-full">
+<div class="w-full" data-controller="draggable">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
@@ -16,7 +16,10 @@
       currently_reading: "Currently Reading",
       read: "Read"
     }.each do |status, title| %>
-      <div>
+      <div data-draggable-target="category" 
+           data-status="<%= status %>" 
+           class="transition-colors duration-200"
+           data-action="dragover->draggable#dragover dragleave->draggable#dragleave drop->draggable#drop">
         <h2 class="text-2xl font-semibold mb-4"><%= title %></h2>
         <div class="min-w-full">
           <% books = @books.select { |book| book.status == status.to_s } %>
@@ -69,7 +72,11 @@
               </div>
               <div class="divide-y divide-gray-200">
                 <% books.each do |book| %>
-                  <div class="px-4 py-2 hover:bg-gray-50">
+                  <div class="px-4 py-2 hover:bg-gray-50 cursor-move"
+                       draggable="true"
+                       data-draggable-target="book"
+                       data-book-id="<%= book.id %>"
+                       data-action="dragstart->draggable#dragstart dragend->draggable#dragend">
                     <div class="grid grid-cols-12 gap-4 items-center">
                       <%= render "book_summary", book: book %>
                     </div>
