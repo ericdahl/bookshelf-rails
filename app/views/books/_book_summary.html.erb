@@ -1,9 +1,9 @@
-<div class="col-span-6">
-  <div class="flex items-center gap-2">
-    <h3 class="font-medium truncate"><%= book.title %></h3>
-    <span class="text-gray-500">•</span>
-    <span class="text-gray-600 truncate"><%= book.author %></span>
-  </div>
+<div class="col-span-4">
+  <h3 class="font-medium truncate"><%= book.title %></h3>
+</div>
+
+<div class="col-span-3">
+  <span class="text-gray-600 truncate"><%= book.author %></span>
 </div>
 
 <div class="col-span-2">
@@ -12,7 +12,7 @@
   </span>
 </div>
 
-<div class="col-span-2">
+<div class="col-span-1">
   <% if book.rating %>
     <span class="inline-flex items-center rounded-md bg-yellow-50 px-1.5 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">
       <%= book.rating %>/10
