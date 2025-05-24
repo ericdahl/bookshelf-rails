@@ -58,13 +58,13 @@
     <%= form.select :book_type, Book.book_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-input" %>
 
     <%= form.label :date_added %>
-    <%= form.datetime_select :date_added, class: "form-input" %>
+    <%= form.date_field :date_added, class: "form-input" %>
 
     <%= form.label :date_started %>
-    <%= form.datetime_select :date_started, class: "form-input" %>
+    <%= form.date_field :date_started, class: "form-input" %>
 
     <%= form.label :date_finished %>
-    <%= form.datetime_select :date_finished, class: "form-input" %>
+    <%= form.date_field :date_finished, class: "form-input" %>
   </div>
 
   <div class="inline">
