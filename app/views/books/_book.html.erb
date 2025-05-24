@@ -7,5 +7,36 @@
     <strong>Author:</strong>
     <%= book.author %>
   </p>
-  <!-- Add more fields as needed -->
+  <p>
+    <strong>Status:</strong>
+    <%= book.status&.titleize %>
+  </p>
+  <p>
+    <strong>Book Type:</strong>
+    <%= book.book_type&.titleize %>
+  </p>
+  <p>
+    <strong>Rating:</strong>
+    <%= book.rating %>/10
+  </p>
+  <p>
+    <strong>ISBN-13:</strong>
+    <%= book.isbn_13 %>
+  </p>
+  <p>
+    <strong>ISBN-10:</strong>
+    <%= book.isbn_10 %>
+  </p>
+  <p>
+    <strong>Series:</strong>
+    <%= book.series&.name %>
+  </p>
+  <p>
+    <strong>Created:</strong>
+    <%= book.created_at&.strftime("%B %d, %Y") %>
+  </p>
+  <p>
+    <strong>Last Updated:</strong>
+    <%= book.updated_at&.strftime("%B %d, %Y") %>
+  </p>
 </div>
