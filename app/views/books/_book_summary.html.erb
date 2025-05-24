@@ -1,9 +1,13 @@
-<div class="col-span-4">
+<div class="col-span-3">
   <h3 class="font-medium truncate"><%= book.title %></h3>
 </div>
 
-<div class="col-span-3">
+<div class="col-span-2">
   <span class="text-gray-600 truncate"><%= book.author %></span>
+</div>
+
+<div class="col-span-2">
+  <span class="text-gray-600 truncate"><%= book.series&.name || "-" %></span>
 </div>
 
 <div class="col-span-2">
