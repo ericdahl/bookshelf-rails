@@ -18,19 +18,28 @@
     }.each do |status, title| %>
       <div>
         <h2 class="text-2xl font-semibold mb-4"><%= title %></h2>
-        <div class="min-w-full divide-y divide-gray-200 space-y-5">
+        <div class="min-w-full">
           <% books = @books.select { |book| book.status == status.to_s } %>
           <% if books.any? %>
-            <% books.each do |book| %>
-              <div class="flex flex-col sm:flex-row justify-between items-center py-5">
-                <%= render "book_summary", book: book %>
-                <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
-                  <%= link_to "Show", book, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-                  <%= link_to "Edit", edit_book_path(book), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-                  <%= button_to "Destroy", book, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+            <div class="overflow-hidden rounded-lg border border-gray-200">
+              <div class="bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500">
+                <div class="grid grid-cols-12 gap-4">
+                  <div class="col-span-6">Title & Author</div>
+                  <div class="col-span-2">Type</div>
+                  <div class="col-span-2">Rating</div>
+                  <div class="col-span-2 text-right">Actions</div>
                 </div>
               </div>
-            <% end %>
+              <div class="divide-y divide-gray-200">
+                <% books.each do |book| %>
+                  <div class="px-4 py-2 hover:bg-gray-50">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                      <%= render "book_summary", book: book %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           <% else %>
             <p class="text-center py-4 text-gray-500">No books in this category</p>
           <% end %>
