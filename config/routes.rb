@@ -30,4 +30,6 @@ Rails.application.routes.draw do
       patch :update_status
     end
   end
+
+  post 'books/restore', to: 'books#restore', as: 'restore_book'
 end

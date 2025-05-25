@@ -3,6 +3,9 @@ require "httparty"
 class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
 
+  # Temporary in-memory store for last deleted book (for demo purposes)
+  @@last_deleted_book = nil
+
   # GET /books or /books.json
   def index
     @sort_column = params[:sort] || session[:sort_column] || "title"
@@ -50,8 +53,65 @@ class BooksController < ApplicationController
 
   # DELETE /books/1 or /books/1.json
   def destroy
+    @@last_deleted_book = @book.dup
+    @@last_deleted_book.attributes = @book.attributes
+    @book_title = @book.title
+    @book_status = @book.status
+    @book_id = @book.id
     @book.destroy
-    redirect_to books_url, notice: "Book was successfully destroyed."
+    respond_to do |format|
+      format.turbo_stream do
+        @sort_column = session[:sort_column] || "title"
+        @sort_direction = session[:sort_direction] || "asc"
+        @books = Book.all.order(@sort_column => @sort_direction)
+        render turbo_stream: [
+          turbo_stream.replace(
+            "#{@book_status}_section",
+            partial: "status_section",
+            locals: { status: @book_status, title: status_title(@book_status), books: @books.select { |book| book.status == @book_status } }
+          ),
+          turbo_stream.replace(
+            "notice",
+            partial: "undo_notice",
+            locals: { book_title: @book_title, book_id: @book_id, book_status: @book_status }
+          )
+        ]
+      end
+      format.html { redirect_to books_url, notice: "Book was successfully destroyed." }
+    end
+  end
+
+  def restore
+    if @@last_deleted_book
+      restored_book = Book.create(@@last_deleted_book.attributes.except('id', 'created_at', 'updated_at'))
+      @book_status = restored_book.status
+      @sort_column = session[:sort_column] || "title"
+      @sort_direction = session[:sort_direction] || "asc"
+      @books = Book.all.order(@sort_column => @sort_direction)
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(
+              "#{@book_status}_section",
+              partial: "status_section",
+              locals: { status: @book_status, title: status_title(@book_status), books: @books.select { |book| book.status == @book_status } }
+            ),
+            turbo_stream.replace(
+              "notice",
+              partial: "undo_notice_restored",
+              locals: { book_title: restored_book.title }
+            )
+          ]
+        end
+        format.html { redirect_to books_url, notice: "Restored '#{restored_book.title}'" }
+      end
+      @@last_deleted_book = nil
+    else
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.html { redirect_to books_url, alert: "No book to restore." }
+      end
+    end
   end
 
   def search
