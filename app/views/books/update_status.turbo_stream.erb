@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "#{@old_status}_section" do %>
+  <%= render "status_section", status: @old_status, title: status_title(@old_status), books: @books.select { |book| book.status == @old_status } %>
+<% end %>
+
+<%= turbo_stream.replace "#{@book.status}_section" do %>
+  <%= render "status_section", status: @book.status, title: status_title(@book.status), books: @books.select { |book| book.status == @book.status } %>
+<% end %> 

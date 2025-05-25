@@ -26,32 +26,46 @@ export default class extends Controller {
 
   drop(event) {
     event.preventDefault()
+    event.currentTarget.classList.remove("bg-blue-50")
+    
     const bookId = event.dataTransfer.getData("text/plain")
     const newStatus = event.currentTarget.dataset.status
     
     console.log(`Moving book ${bookId} to status ${newStatus}`)
     
-    const token = document.querySelector('meta[name="csrf-token"]')?.content
-    if (!token) {
-      console.error("CSRF token not found")
-      return
+    // Use Turbo to submit the form
+    const form = document.createElement('form')
+    form.method = 'POST'
+    form.action = `/books/${bookId}/update_status`
+    form.style.display = 'none'
+    
+    // Add CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+    if (csrfToken) {
+      const csrfInput = document.createElement('input')
+      csrfInput.type = 'hidden'
+      csrfInput.name = 'authenticity_token'
+      csrfInput.value = csrfToken
+      form.appendChild(csrfInput)
     }
-
-    fetch(`/books/${bookId}/update_status`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token
-      },
-      body: JSON.stringify({ status: newStatus })
-    }).then(response => {
-      if (response.ok) {
-        window.location.reload()
-      } else {
-        console.error("Failed to update book status:", response.statusText)
-      }
-    }).catch(error => {
-      console.error("Error updating book status:", error)
-    })
+    
+    // Add method override for PATCH
+    const methodInput = document.createElement('input')
+    methodInput.type = 'hidden'
+    methodInput.name = '_method'
+    methodInput.value = 'PATCH'
+    form.appendChild(methodInput)
+    
+    // Add status parameter
+    const statusInput = document.createElement('input')
+    statusInput.type = 'hidden'
+    statusInput.name = 'status'
+    statusInput.value = newStatus
+    form.appendChild(statusInput)
+    
+    // Submit with Turbo
+    document.body.appendChild(form)
+    form.requestSubmit()
+    document.body.removeChild(form)
   }
 } 

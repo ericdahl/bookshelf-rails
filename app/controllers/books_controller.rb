@@ -3,9 +3,13 @@ class BooksController < ApplicationController
 
   # GET /books or /books.json
   def index
-    @sort_column = params[:sort] || 'title'
-    @sort_direction = params[:direction] || 'asc'
-    
+    @sort_column = params[:sort] || session[:sort_column] || "title"
+    @sort_direction = params[:direction] || session[:sort_direction] || "asc"
+
+    # Store sort preferences in session
+    session[:sort_column] = @sort_column if params[:sort]
+    session[:sort_direction] = @sort_direction if params[:direction]
+
     @books = Book.all.order(@sort_column => @sort_direction)
   end
 
@@ -50,10 +54,23 @@ class BooksController < ApplicationController
 
   def update_status
     @book = Book.find(params[:id])
+    @old_status = @book.status
+
     if @book.update(status: params[:status])
-      head :ok
+      # Set sort parameters for the partial
+      @sort_column = session[:sort_column] || "title"
+      @sort_direction = session[:sort_direction] || "asc"
+      @books = Book.all.order(@sort_column => @sort_direction)
+
+      respond_to do |format|
+        format.turbo_stream # Will render update_status.turbo_stream.erb
+        format.json { head :ok }
+      end
     else
-      head :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.json { head :unprocessable_entity }
+      end
     end
   end
 

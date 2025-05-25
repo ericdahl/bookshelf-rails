@@ -16,79 +16,8 @@
       currently_reading: "Currently Reading",
       read: "Read"
     }.each do |status, title| %>
-      <div data-draggable-target="category" 
-           data-status="<%= status %>" 
-           class="transition-colors duration-200"
-           data-action="dragover->draggable#dragover dragleave->draggable#dragleave drop->draggable#drop">
-        <h2 class="text-2xl font-semibold mb-4"><%= title %></h2>
-        <div class="min-w-full">
-          <% books = @books.select { |book| book.status == status.to_s } %>
-          <% if books.any? %>
-            <div class="overflow-hidden rounded-lg border border-gray-200">
-              <div class="bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500">
-                <div class="grid grid-cols-12 gap-4">
-                  <div class="col-span-3">
-                    <%= link_to books_path(sort: 'title', direction: @sort_direction == 'asc' ? 'desc' : 'asc'), class: "flex items-center gap-1 hover:text-gray-700" do %>
-                      Title
-                      <% if @sort_column == 'title' %>
-                        <span class="text-gray-400"><%= @sort_direction == 'asc' ? '↑' : '↓' %></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="col-span-2">
-                    <%= link_to books_path(sort: 'author', direction: @sort_direction == 'asc' ? 'desc' : 'asc'), class: "flex items-center gap-1 hover:text-gray-700" do %>
-                      Author
-                      <% if @sort_column == 'author' %>
-                        <span class="text-gray-400"><%= @sort_direction == 'asc' ? '↑' : '↓' %></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="col-span-2">
-                    <%= link_to books_path(sort: 'series', direction: @sort_direction == 'asc' ? 'desc' : 'asc'), class: "flex items-center gap-1 hover:text-gray-700" do %>
-                      Series
-                      <% if @sort_column == 'series' %>
-                        <span class="text-gray-400"><%= @sort_direction == 'asc' ? '↑' : '↓' %></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="col-span-2">
-                    <%= link_to books_path(sort: 'book_type', direction: @sort_direction == 'asc' ? 'desc' : 'asc'), class: "flex items-center gap-1 hover:text-gray-700" do %>
-                      Type
-                      <% if @sort_column == 'book_type' %>
-                        <span class="text-gray-400"><%= @sort_direction == 'asc' ? '↑' : '↓' %></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="col-span-1">
-                    <%= link_to books_path(sort: 'rating', direction: @sort_direction == 'asc' ? 'desc' : 'asc'), class: "flex items-center gap-1 hover:text-gray-700" do %>
-                      Rating
-                      <% if @sort_column == 'rating' %>
-                        <span class="text-gray-400"><%= @sort_direction == 'asc' ? '↑' : '↓' %></span>
-                      <% end %>
-                    <% end %>
-                  </div>
-                  <div class="col-span-2 text-right">Actions</div>
-                </div>
-              </div>
-              <div class="divide-y divide-gray-200">
-                <% books.each do |book| %>
-                  <div class="px-4 py-2 hover:bg-gray-50 cursor-move"
-                       draggable="true"
-                       data-draggable-target="book"
-                       data-book-id="<%= book.id %>"
-                       data-action="dragstart->draggable#dragstart dragend->draggable#dragend">
-                    <div class="grid grid-cols-12 gap-4 items-center">
-                      <%= render "book_summary", book: book %>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% else %>
-            <p class="text-center py-4 text-gray-500">No books in this category</p>
-          <% end %>
-        </div>
-      </div>
+      <% books = @books.select { |book| book.status == status.to_s } %>
+      <%= render "status_section", status: status, title: title, books: books %>
     <% end %>
   </div>
 </div>
