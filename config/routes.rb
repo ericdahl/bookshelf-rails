@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :books
   resources :series
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -23,6 +22,10 @@ Rails.application.routes.draw do
   end
 
   resources :books do
+    collection do
+      get :search
+      post :add_from_search
+    end
     member do
       patch :update_status
     end

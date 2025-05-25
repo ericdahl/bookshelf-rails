@@ -1,3 +1,5 @@
+require "httparty"
+
 class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
 
@@ -52,6 +54,83 @@ class BooksController < ApplicationController
     redirect_to books_url, notice: "Book was successfully destroyed."
   end
 
+  def search
+    @query = params[:query]
+    @search_results = []
+
+    if @query.present?
+      begin
+        # Use the existing API endpoint
+        api_url = "#{request.base_url}/api/v1/search"
+        Rails.logger.info "Making API request to: #{api_url} with query: #{@query}"
+        response = HTTParty.get(api_url, query: { query: @query })
+
+        if response.success?
+          @search_results = response.parsed_response
+          Rails.logger.info "API response successful, found #{@search_results.size} results"
+          # Filter out books that are already in the user's collection
+          existing_book_ids = Book.pluck(:open_library_id).compact
+          Rails.logger.info "Existing book IDs: #{existing_book_ids}"
+          @search_results = @search_results.reject { |book| existing_book_ids.include?(book["open_library_id"]) }
+          Rails.logger.info "After filtering, #{@search_results.size} results remain"
+        else
+          Rails.logger.error "API request failed with status: #{response.code}"
+        end
+      rescue => e
+        Rails.logger.error "Search error: #{e.message}"
+        @search_results = []
+      end
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("search-results", partial: "search_results") }
+      format.html { render turbo_stream: turbo_stream.replace("search-results", partial: "search_results") }
+    end
+  end
+
+  def add_from_search
+    @status = params[:status]
+
+    # Create book from search data
+    @book = Book.new(
+      title: params[:title],
+      author: params[:authors],
+      publication_year: params[:publication_year],
+      open_library_id: params[:open_library_id],
+      status: @status,
+      book_type: "physical_book",
+      date_added: Time.current
+    )
+
+    if @book.save
+      # Refresh the books data for the view
+      @sort_column = session[:sort_column] || "title"
+      @sort_direction = session[:sort_direction] || "asc"
+      @books = Book.all.order(@sort_column => @sort_direction)
+
+      # Clear search results
+      @query = ""
+      @search_results = []
+
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("#{@status}_section", partial: "status_section", locals: {
+              status: @status,
+              title: status_title(@status),
+              books: @books.select { |book| book.status == @status }
+            }),
+            turbo_stream.replace("search-results", partial: "search_results")
+          ]
+        end
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+      end
+    end
+  end
+
   def update_status
     @book = Book.find(params[:id])
     @old_status = @book.status
@@ -89,5 +168,23 @@ class BooksController < ApplicationController
         :series_id, :status, :rating, :comments, :book_type,
         :date_added, :date_started, :date_finished
       )
+    end
+
+    def format_authors(authors)
+      return "Unknown Author" if authors.blank?
+
+      if authors.is_a?(Array)
+        authors.join(", ")
+      else
+        authors.to_s
+      end
+    end
+
+    def status_title(status)
+      {
+        "want_to_read" => "Want to Read",
+        "currently_reading" => "Currently Reading",
+        "read" => "Read"
+      }[status] || status.humanize
     end
 end
