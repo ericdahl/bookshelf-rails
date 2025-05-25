@@ -83,7 +83,7 @@ class BooksController < ApplicationController
 
   def restore
     if @@last_deleted_book
-      restored_book = Book.create(@@last_deleted_book.attributes.except('id', 'created_at', 'updated_at'))
+      restored_book = Book.create(@@last_deleted_book.attributes.except("id", "created_at", "updated_at"))
       @book_status = restored_book.status
       @sort_column = session[:sort_column] || "title"
       @sort_direction = session[:sort_direction] || "asc"

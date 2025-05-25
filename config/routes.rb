@@ -31,5 +31,5 @@ Rails.application.routes.draw do
     end
   end
 
-  post 'books/restore', to: 'books#restore', as: 'restore_book'
+  post "books/restore", to: "books#restore", as: "restore_book"
 end
