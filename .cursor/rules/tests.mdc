@@ -3,4 +3,4 @@ description:
 globs: 
 alwaysApply: true
 ---
-After each change run tests via `bin/rails test`
+After each change run tests via `bin/rails db:test:prepare test test:system`

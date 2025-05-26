@@ -117,6 +117,12 @@ class BooksController < ApplicationController
   def search
     @query = params[:query]
     @search_results = []
+    @search_sort_column = params[:search_sort] || session[:search_sort_column] || "title"
+    @search_sort_direction = params[:search_direction] || session[:search_sort_direction] || "asc"
+
+    # Store search sort preferences in session
+    session[:search_sort_column] = @search_sort_column if params[:search_sort]
+    session[:search_sort_direction] = @search_sort_direction if params[:search_direction]
 
     if @query.present?
       begin
@@ -133,6 +139,9 @@ class BooksController < ApplicationController
           Rails.logger.info "Existing book IDs: #{existing_book_ids}"
           @search_results = @search_results.reject { |book| existing_book_ids.include?(book["open_library_id"]) }
           Rails.logger.info "After filtering, #{@search_results.size} results remain"
+
+          # Sort the search results
+          @search_results = sort_search_results(@search_results, @search_sort_column, @search_sort_direction)
         else
           Rails.logger.error "API request failed with status: #{response.code}"
         end
@@ -246,5 +255,23 @@ class BooksController < ApplicationController
         "currently_reading" => "Currently Reading",
         "read" => "Read"
       }[status] || status.humanize
+    end
+
+    def sort_search_results(results, sort_column, sort_direction)
+      sorted = results.sort_by do |book|
+        value = case sort_column
+        when "title"
+          book["title"]&.downcase || ""
+        when "author"
+          Array(book["authors"]).join(", ").downcase
+        when "publication_year"
+          book["publication_year"] || 0
+        else
+          book["title"]&.downcase || ""
+        end
+        value
+      end
+
+      sort_direction == "desc" ? sorted.reverse : sorted
     end
 end
