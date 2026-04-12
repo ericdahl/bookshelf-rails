@@ -9,9 +9,6 @@ class BooksController < ApplicationController
   ALLOWED_SORT_DIRECTIONS = %w[asc desc].freeze
   ALLOWED_SEARCH_SORT_COLUMNS = %w[title author publication_year].freeze
 
-  # Temporary in-memory store for last deleted book (for demo purposes)
-  @@last_deleted_book = nil
-
   # GET /books or /books.json
   def index
     @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
@@ -52,8 +49,7 @@ class BooksController < ApplicationController
 
   # DELETE /books/1 or /books/1.json
   def destroy
-    @@last_deleted_book = @book.dup
-    @@last_deleted_book.attributes = @book.attributes
+    session[:last_deleted_book] = @book.attributes
     @book_title = @book.title
     @book_status = @book.status
     @book_id = @book.id
@@ -79,8 +75,9 @@ class BooksController < ApplicationController
   end
 
   def restore
-    if @@last_deleted_book
-      restored_book = Book.create(@@last_deleted_book.attributes.except("id", "created_at", "updated_at"))
+    if session[:last_deleted_book]
+      restored_book = Book.create(session[:last_deleted_book].except("id", "created_at", "updated_at"))
+      session.delete(:last_deleted_book)
       @book_status = restored_book.status
       @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
       respond_to do |format|
@@ -100,7 +97,6 @@ class BooksController < ApplicationController
         end
         format.html { redirect_to books_url, notice: "Restored '#{restored_book.title}'" }
       end
-      @@last_deleted_book = nil
     else
       respond_to do |format|
         format.turbo_stream { head :unprocessable_entity }
