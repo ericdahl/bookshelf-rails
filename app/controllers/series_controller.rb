@@ -50,10 +50,14 @@ class SeriesController < ApplicationController
   # DELETE /series/1 or /series/1.json
   def destroy
     @series.destroy!
-
     respond_to do |format|
       format.html { redirect_to series_index_path, status: :see_other, notice: "Series was successfully destroyed." }
       format.json { head :no_content }
+    end
+  rescue ActiveRecord::RecordNotDestroyed => e
+    respond_to do |format|
+      format.html { redirect_to @series, alert: "Could not delete series: #{e.message}" }
+      format.json { render json: { error: e.message }, status: :unprocessable_entity }
     end
   end
 

@@ -177,6 +177,11 @@ class BooksController < ApplicationController
         format.json { head :unprocessable_entity }
       end
     end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.turbo_stream { head :not_found }
+      format.json { render json: { error: "Book not found" }, status: :not_found }
+    end
   end
 
   private
