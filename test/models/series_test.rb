@@ -37,7 +37,7 @@ class SeriesTest < ActiveSupport::TestCase
   end
 
   test "should nullify associated books when destroyed" do
-    book = Book.create!(title: "Test Book", series: @series, status: :want_to_read)
+    book = Book.create!(title: "Test Book", series: @series, status: :want_to_read, book_type: :physical_book)
     @series.destroy
     assert_nil book.reload.series_id
   end
