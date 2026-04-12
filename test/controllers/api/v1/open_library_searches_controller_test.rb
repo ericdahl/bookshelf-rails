@@ -109,7 +109,7 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
   # ---------------------------------------------------------------------------
 
   test "should return 500 on HTTParty network error" do
-    stub_request(:get, OPENLIBRARY_URL).to_raise(HTTParty::Error.new("connection refused"))
+    stub_request(:get, /openlibrary\.org\/search\.json/).to_raise(HTTParty::Error.new("connection refused"))
 
     get "/api/v1/search", params: { query: "test" }
     assert_response :internal_server_error
@@ -117,7 +117,7 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
   end
 
   test "should return 500 on connection timeout" do
-    stub_request(:get, OPENLIBRARY_URL).to_raise(Net::OpenTimeout)
+    stub_request(:get, /openlibrary\.org\/search\.json/).to_raise(Net::OpenTimeout)
 
     get "/api/v1/search", params: { query: "test" }
     assert_response :internal_server_error
@@ -217,7 +217,7 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
   private
 
   def stub_openlibrary(status:, body:)
-    stub_request(:get, OPENLIBRARY_URL)
+    stub_request(:get, /openlibrary\.org\/search\.json/)
       .to_return(
         status: status,
         body: body.is_a?(String) ? body : body.to_json,
