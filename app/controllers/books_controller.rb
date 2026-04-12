@@ -15,7 +15,7 @@ class BooksController < ApplicationController
     session[:sort_column] = @sort_column if params[:sort]
     session[:sort_direction] = @sort_direction if params[:direction]
 
-    @books = Book.all.order(@sort_column => @sort_direction)
+    @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
   end
 
   # GET /books/1 or /books/1.json
@@ -63,7 +63,7 @@ class BooksController < ApplicationController
       format.turbo_stream do
         @sort_column = session[:sort_column] || "title"
         @sort_direction = session[:sort_direction] || "asc"
-        @books = Book.all.order(@sort_column => @sort_direction)
+        @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
         render turbo_stream: [
           turbo_stream.replace(
             "#{@book_status}_section",
@@ -87,7 +87,7 @@ class BooksController < ApplicationController
       @book_status = restored_book.status
       @sort_column = session[:sort_column] || "title"
       @sort_direction = session[:sort_direction] || "asc"
-      @books = Book.all.order(@sort_column => @sort_direction)
+      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
@@ -175,7 +175,7 @@ class BooksController < ApplicationController
       # Refresh the books data for the view
       @sort_column = session[:sort_column] || "title"
       @sort_direction = session[:sort_direction] || "asc"
-      @books = Book.all.order(@sort_column => @sort_direction)
+      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
 
       # Clear search results
       @query = ""
@@ -208,7 +208,7 @@ class BooksController < ApplicationController
       # Set sort parameters for the partial
       @sort_column = session[:sort_column] || "title"
       @sort_direction = session[:sort_direction] || "asc"
-      @books = Book.all.order(@sort_column => @sort_direction)
+      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
 
       respond_to do |format|
         format.turbo_stream # Will render update_status.turbo_stream.erb
