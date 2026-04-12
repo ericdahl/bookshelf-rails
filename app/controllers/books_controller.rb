@@ -2,19 +2,18 @@ require "httparty"
 
 class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
+  before_action :set_sort_params, only: %i[ index destroy restore add_from_search update_status ]
+  before_action :set_search_sort_params, only: %i[ search ]
+
+  ALLOWED_SORT_COLUMNS = %w[title author publication_year rating book_type].freeze
+  ALLOWED_SORT_DIRECTIONS = %w[asc desc].freeze
+  ALLOWED_SEARCH_SORT_COLUMNS = %w[title author publication_year].freeze
 
   # Temporary in-memory store for last deleted book (for demo purposes)
   @@last_deleted_book = nil
 
   # GET /books or /books.json
   def index
-    @sort_column = params[:sort] || session[:sort_column] || "title"
-    @sort_direction = params[:direction] || session[:sort_direction] || "asc"
-
-    # Store sort preferences in session
-    session[:sort_column] = @sort_column if params[:sort]
-    session[:sort_direction] = @sort_direction if params[:direction]
-
     @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
   end
 
@@ -61,8 +60,6 @@ class BooksController < ApplicationController
     @book.destroy
     respond_to do |format|
       format.turbo_stream do
-        @sort_column = session[:sort_column] || "title"
-        @sort_direction = session[:sort_direction] || "asc"
         @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
         render turbo_stream: [
           turbo_stream.replace(
@@ -85,8 +82,6 @@ class BooksController < ApplicationController
     if @@last_deleted_book
       restored_book = Book.create(@@last_deleted_book.attributes.except("id", "created_at", "updated_at"))
       @book_status = restored_book.status
-      @sort_column = session[:sort_column] || "title"
-      @sort_direction = session[:sort_direction] || "asc"
       @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
       respond_to do |format|
         format.turbo_stream do
@@ -117,16 +112,9 @@ class BooksController < ApplicationController
   def search
     @query = params[:query]
     @search_results = []
-    @search_sort_column = params[:search_sort] || session[:search_sort_column] || "title"
-    @search_sort_direction = params[:search_direction] || session[:search_sort_direction] || "asc"
-
-    # Store search sort preferences in session
-    session[:search_sort_column] = @search_sort_column if params[:search_sort]
-    session[:search_sort_direction] = @search_sort_direction if params[:search_direction]
 
     if @query.present?
       begin
-        # Use the existing API endpoint
         api_url = "#{request.base_url}/api/v1/search"
         Rails.logger.info "Making API request to: #{api_url} with query: #{@query}"
         response = HTTParty.get(api_url, query: { query: @query })
@@ -172,9 +160,6 @@ class BooksController < ApplicationController
     )
 
     if @book.save
-      # Refresh the books data for the view
-      @sort_column = session[:sort_column] || "title"
-      @sort_direction = session[:sort_direction] || "asc"
       @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
 
       # Clear search results
@@ -205,9 +190,6 @@ class BooksController < ApplicationController
     @old_status = @book.status
 
     if @book.update(status: params[:status])
-      # Set sort parameters for the partial
-      @sort_column = session[:sort_column] || "title"
-      @sort_direction = session[:sort_direction] || "asc"
       @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
 
       respond_to do |format|
@@ -237,6 +219,24 @@ class BooksController < ApplicationController
         :series_id, :status, :rating, :comments, :book_type,
         :date_added, :date_started, :date_finished
       )
+    end
+
+    def set_sort_params
+      column = params[:sort] || session[:sort_column] || "title"
+      direction = params[:direction] || session[:sort_direction] || "asc"
+      @sort_column = ALLOWED_SORT_COLUMNS.include?(column) ? column : "title"
+      @sort_direction = ALLOWED_SORT_DIRECTIONS.include?(direction) ? direction : "asc"
+      session[:sort_column] = @sort_column if params[:sort]
+      session[:sort_direction] = @sort_direction if params[:direction]
+    end
+
+    def set_search_sort_params
+      column = params[:search_sort] || session[:search_sort_column] || "title"
+      direction = params[:search_direction] || session[:search_sort_direction] || "asc"
+      @search_sort_column = ALLOWED_SEARCH_SORT_COLUMNS.include?(column) ? column : "title"
+      @search_sort_direction = ALLOWED_SORT_DIRECTIONS.include?(direction) ? direction : "asc"
+      session[:search_sort_column] = @search_sort_column if params[:search_sort]
+      session[:search_sort_direction] = @search_sort_direction if params[:search_direction]
     end
 
     def format_authors(authors)
