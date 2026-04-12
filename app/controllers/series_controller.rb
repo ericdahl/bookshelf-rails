@@ -3,7 +3,7 @@ class SeriesController < ApplicationController
 
   # GET /series or /series.json
   def index
-    @series = Series.all
+    @series = Series.all.includes(:books)
   end
 
   # GET /series/1 or /series/1.json
