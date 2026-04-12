@@ -223,7 +223,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle search API failure gracefully" do
-    stub_request(:get, /example\.com\/api\/v1\/search/)
+    stub_request(:get, /openlibrary\.org\/search\.json/)
       .to_return(status: 500, body: "error")
 
     get search_books_url, params: { query: "test" }
@@ -232,7 +232,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle search network error gracefully" do
-    stub_request(:get, /example\.com\/api\/v1\/search/)
+    stub_request(:get, /openlibrary\.org\/search\.json/)
       .to_raise(HTTParty::Error.new("connection failed"))
 
     get search_books_url, params: { query: "test" }
@@ -312,11 +312,22 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
 
   private
 
+  # Stubs the upstream OpenLibrary API with results expressed in the
+  # already-transformed shape (open_library_id, title, authors, publication_year).
+  # Converts them back to the raw docs format that OpenLibrarySearchService expects.
   def stub_openlibrary_search(results)
-    stub_request(:get, /example\.com\/api\/v1\/search/)
+    docs = results.map do |r|
+      {
+        key: "/works/#{r['open_library_id']}",
+        title: r["title"],
+        author_name: Array(r["authors"]),
+        first_publish_year: r["publication_year"]
+      }.compact
+    end
+    stub_request(:get, /openlibrary\.org\/search\.json/)
       .to_return(
         status: 200,
-        body: results.to_json,
+        body: { docs: docs }.to_json,
         headers: { "Content-Type" => "application/json" }
       )
   end

@@ -1,5 +1,3 @@
-require "httparty"
-
 class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
   before_action :set_sort_params, only: %i[ index destroy restore add_from_search update_status ]
@@ -110,29 +108,10 @@ class BooksController < ApplicationController
     @search_results = []
 
     if @query.present?
-      begin
-        api_url = "#{request.base_url}/api/v1/search"
-        Rails.logger.info "Making API request to: #{api_url} with query: #{@query}"
-        response = HTTParty.get(api_url, query: { query: @query })
-
-        if response.success?
-          @search_results = response.parsed_response
-          Rails.logger.info "API response successful, found #{@search_results.size} results"
-          # Filter out books that are already in the user's collection
-          existing_book_ids = Book.pluck(:open_library_id).compact
-          Rails.logger.info "Existing book IDs: #{existing_book_ids}"
-          @search_results = @search_results.reject { |book| existing_book_ids.include?(book["open_library_id"]) }
-          Rails.logger.info "After filtering, #{@search_results.size} results remain"
-
-          # Sort the search results
-          @search_results = sort_search_results(@search_results, @search_sort_column, @search_sort_direction)
-        else
-          Rails.logger.error "API request failed with status: #{response.code}"
-        end
-      rescue => e
-        Rails.logger.error "Search error: #{e.message}"
-        @search_results = []
-      end
+      results = OpenLibrarySearchService.new.search(@query)
+      existing_open_library_ids = Book.pluck(:open_library_id).compact.to_set
+      @search_results = results.reject { |book| existing_open_library_ids.include?(book["open_library_id"]) }
+      @search_results = sort_search_results(@search_results, @search_sort_column, @search_sort_direction)
     end
 
     respond_to do |format|
