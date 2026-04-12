@@ -2,6 +2,7 @@ class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
   before_action :set_sort_params, only: %i[ index destroy restore add_from_search update_status ]
   before_action :set_search_sort_params, only: %i[ search ]
+  helper_method :status_title
 
   ALLOWED_SORT_COLUMNS = %w[title author publication_year rating book_type].freeze
   ALLOWED_SORT_DIRECTIONS = %w[asc desc].freeze
