@@ -219,16 +219,6 @@ class BooksController < ApplicationController
       session[:search_sort_direction] = @search_sort_direction if params[:search_direction]
     end
 
-    def format_authors(authors)
-      return "Unknown Author" if authors.blank?
-
-      if authors.is_a?(Array)
-        authors.join(", ")
-      else
-        authors.to_s
-      end
-    end
-
     def status_title(status)
       {
         "want_to_read" => "Want to Read",
