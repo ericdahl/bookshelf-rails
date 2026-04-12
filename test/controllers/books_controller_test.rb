@@ -31,9 +31,6 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should fall back to default sort for an unknown column" do
-    # Skipped until PR #115 (fix/sql-injection-sort-params) is merged; the
-    # unsanitized sort value currently raises ActiveRecord::UnknownAttributeReference.
-    skip "Requires fix/sql-injection-sort-params (PR #115)"
     # Ensures SQL injection via sort param does not raise or corrupt data
     get books_url, params: { sort: "'; DROP TABLE books; --", direction: "asc" }
     assert_response :success
@@ -41,9 +38,6 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should fall back to default direction for an invalid value" do
-    # Skipped until PR #115 (fix/sql-injection-sort-params) is merged; the
-    # unsanitized direction value currently raises ActiveRecord::UnknownAttributeReference.
-    skip "Requires fix/sql-injection-sort-params (PR #115)"
     get books_url, params: { sort: "title", direction: "INVALID; --" }
     assert_response :success
   end
