@@ -1,16 +1,16 @@
 class BooksController < ApplicationController
   before_action :set_book, only: %i[ show edit update destroy ]
-  before_action :set_sort_params, only: %i[ index destroy restore add_from_search update_status ]
+  before_action :set_sort_params, only: %i[ index update destroy restore add_from_search update_status ]
   before_action :set_search_sort_params, only: %i[ search ]
   helper_method :status_title
 
-  ALLOWED_SORT_COLUMNS = %w[title author publication_year rating book_type].freeze
+  ALLOWED_SORT_COLUMNS = %w[title author publication_year rating book_type series].freeze
   ALLOWED_SORT_DIRECTIONS = %w[asc desc].freeze
   ALLOWED_SEARCH_SORT_COLUMNS = %w[title author publication_year].freeze
 
   # GET /books or /books.json
   def index
-    @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
+    @books = fetch_ordered_books
   end
 
   # GET /books/1 or /books/1.json
@@ -39,10 +39,28 @@ class BooksController < ApplicationController
 
   # PATCH/PUT /books/1 or /books/1.json
   def update
-    if @book.update(book_params)
-      redirect_to @book, notice: "Book was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @book.update(book_params)
+        @books = fetch_ordered_books
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(
+              "#{@book.status}_section",
+              partial: "status_section",
+              locals: { status: @book.status, title: status_title(@book.status), books: @books.select { |b| b.status == @book.status } }
+            ),
+            turbo_stream.replace("book_modal", template: "books/show")
+          ]
+        end
+        format.html { redirect_to @book, notice: "Book was successfully updated." }
+        format.json { render :show, status: :ok, location: @book }
+      else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("book_modal", template: "books/edit"), status: :unprocessable_entity
+        end
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @book.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -55,7 +73,7 @@ class BooksController < ApplicationController
     @book.destroy
     respond_to do |format|
       format.turbo_stream do
-        @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
+        @books = fetch_ordered_books
         render turbo_stream: [
           turbo_stream.replace(
             "#{@book_status}_section",
@@ -66,7 +84,8 @@ class BooksController < ApplicationController
             "notice",
             partial: "undo_notice",
             locals: { book_title: @book_title, book_id: @book_id, book_status: @book_status }
-          )
+          ),
+          turbo_stream.replace("book_modal", html: "")
         ]
       end
       format.html { redirect_to books_url, notice: "Book was successfully destroyed." }
@@ -78,7 +97,7 @@ class BooksController < ApplicationController
       restored_book = Book.create!(session[:last_deleted_book].except("id", "created_at", "updated_at"))
       session.delete(:last_deleted_book)
       @book_status = restored_book.status
-      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
+      @books = fetch_ordered_books
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
@@ -142,7 +161,7 @@ class BooksController < ApplicationController
     )
 
     if @book.save
-      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
+      @books = fetch_ordered_books
 
       # Clear search results
       @query = ""
@@ -176,7 +195,7 @@ class BooksController < ApplicationController
     @old_status = @book.status
 
     if @book.update(status: params[:status])
-      @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
+      @books = fetch_ordered_books
 
       respond_to do |format|
         format.turbo_stream # Will render update_status.turbo_stream.erb
@@ -241,6 +260,18 @@ class BooksController < ApplicationController
         "currently_reading" => "Currently Reading",
         "read" => "Read"
       }[status] || status.humanize
+    end
+
+    def fetch_ordered_books
+      books = Book.all.includes(:series)
+      column = @sort_column.presence || "title"
+      direction = @sort_direction.presence || "asc"
+      if column == "series"
+        dir = direction.to_s.upcase == "DESC" ? "DESC" : "ASC"
+        books.left_joins(:series).order(Arel.sql("series.name #{dir} NULLS LAST, books.title ASC"))
+      else
+        books.order(column => direction)
+      end
     end
 
     def sort_search_results(results, sort_column, sort_direction)

@@ -30,6 +30,16 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should sort index by series ascending" do
+    get books_url, params: { sort: "series", direction: "asc" }
+    assert_response :success
+  end
+
+  test "should sort index by series descending" do
+    get books_url, params: { sort: "series", direction: "desc" }
+    assert_response :success
+  end
+
   test "should fall back to default sort for an unknown column" do
     # Ensures SQL injection via sort param does not raise or corrupt data
     get books_url, params: { sort: "'; DROP TABLE books; --", direction: "asc" }
@@ -92,6 +102,20 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated Title", @book.title
     assert_equal "read", @book.status
     assert_equal "ebook", @book.book_type
+  end
+
+  test "should update book via turbo_stream and respond with stream replacements" do
+    patch book_url(@book), params: { book: { title: "Turbo Updated Title", status: "read", book_type: "ebook" } }, as: :turbo_stream
+    assert_response :success
+    assert_includes response.body, %(target="read_section")
+    assert_includes response.body, %(target="book_modal")
+    assert_equal "Turbo Updated Title", @book.reload.title
+  end
+
+  test "should return unprocessable_entity via turbo_stream when update fails" do
+    patch book_url(@book), params: { book: { title: "" } }, as: :turbo_stream
+    assert_response :unprocessable_entity
+    assert_includes response.body, %(target="book_modal")
   end
 
   test "should not update book with blank title" do
