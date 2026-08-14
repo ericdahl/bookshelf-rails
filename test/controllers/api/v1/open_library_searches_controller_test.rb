@@ -113,7 +113,7 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
 
     get "/api/v1/search", params: { query: "test" }
     assert_response :internal_server_error
-    assert_includes JSON.parse(response.body)["error"], "HTTParty error"
+    assert_equal "Failed to connect to OpenLibrary", JSON.parse(response.body)["error"]
   end
 
   test "should return 500 on connection timeout" do
