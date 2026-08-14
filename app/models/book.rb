@@ -7,6 +7,7 @@ class Book < ApplicationRecord
   validates :title, presence: true
   validates :rating, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10 }, allow_nil: true
   validates :status, presence: true
+  validates :book_type, presence: true
   validates :isbn_13, uniqueness: true, allow_blank: true
   validates :isbn_10, uniqueness: true, allow_blank: true
 end
