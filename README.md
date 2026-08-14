@@ -29,7 +29,7 @@ books directly to your shelf.
 ### Quick start (Automated)
 
 ```bash
-# Clone, configure, migrate, seed, and start dev server
+# Clone, install dependencies, migrate, and start dev server
 git clone <repo-url>
 cd bookshelf-rails
 bin/setup
