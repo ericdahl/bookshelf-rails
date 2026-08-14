@@ -19,30 +19,41 @@ books directly to your shelf.
 | Tool | Notes |
 |------|-------|
 | Ruby 3.4.4 | Use [rbenv](https://github.com/rbenv/rbenv) or [asdf](https://asdf-vm.com/) |
-| Bundler 2.6.9 | `gem install bundler -v 2.6.9` |
+| Bundler 2.6+ | `gem install bundler` |
 | SQLite 3 | Usually pre-installed on macOS/Linux |
-| Node.js | Only needed if you change JS assets |
 
 ---
 
 ## Getting started
+
+### Quick start (Automated)
+
+```bash
+# Clone, configure, migrate, seed, and start dev server
+git clone <repo-url>
+cd bookshelf-rails
+bin/setup
+```
+
+### Manual start
 
 ```bash
 # 1. Clone and enter the repo
 git clone <repo-url>
 cd bookshelf-rails
 
-# 2. Install the exact Bundler version pinned in Gemfile.lock
-gem install bundler -v 2.6.9
+# 2. Configure bundler and install gems locally
+bundle config set --local path 'vendor/bundle'
+bundle install
 
-# 3. Install gems (vendored locally — no system-wide install needed)
-bundle _2.6.9_ install
+# 3. Set up the database
+bundle exec rails db:prepare db:seed
 
-# 4. Set up the database
-bundle _2.6.9_ exec rails db:create db:migrate db:seed
+# 4. Start the server (with live Tailwind CSS watcher)
+bin/dev
 
-# 5. Start the server
-bundle _2.6.9_ exec rails server
+# Or start the Rails server alone
+bundle exec rails server
 ```
 
 Open http://localhost:3000 — you should see the bookshelf index.
@@ -53,19 +64,19 @@ Open http://localhost:3000 — you should see the bookshelf index.
 
 ```bash
 # Run the full test suite
-bundle _2.6.9_ exec rails test
+bundle exec rails test
 
 # Run a single file
-bundle _2.6.9_ exec rails test test/controllers/books_controller_test.rb
+bundle exec rails test test/controllers/books_controller_test.rb
 
 # Run a single test by line number
-bundle _2.6.9_ exec rails test test/models/book_test.rb:42
+bundle exec rails test test/models/book_test.rb:42
 ```
 
 Expected output (all green):
 
 ```
-106 runs, 252 assertions, 0 failures, 0 errors, 0 skips
+111 runs, 264 assertions, 0 failures, 0 errors, 0 skips
 ```
 
 Tests use **WebMock** to block real network calls — no internet access is
@@ -117,4 +128,4 @@ test/
 - **Series tracking**: books can belong to a series
 - **Undo delete**: last-deleted book can be restored within the session
 - **OpenLibrary search**: add books by title/author without manual data entry
-- **REST API**: full CRUD at `/api/v1/books` (requires `X-Api-Token` header)
+- **REST API**: full CRUD at `/api/v1/books` and OpenLibrary search at `/api/v1/search` (requires `X-Api-Token` header)
