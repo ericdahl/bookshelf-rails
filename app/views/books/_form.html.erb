@@ -42,7 +42,7 @@
 
       <div>
         <%= form.label :book_type, class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" do %>
-          Format <span class="text-red-500">*</span>
+          Book type <span class="text-red-500">*</span>
         <% end %>
         <%= form.select :book_type, Book.book_types.keys.map { |k| [k.humanize, k] }, {}, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
       </div>
@@ -100,12 +100,12 @@
     <!-- Identifiers & Cover URL -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div>
-        <%= form.label :isbn_13, "ISBN-13", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.label :isbn_13, "Isbn 13", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
         <%= form.text_field :isbn_13, placeholder: "978...", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
       </div>
 
       <div>
-        <%= form.label :isbn_10, "ISBN-10", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.label :isbn_10, "Isbn 10", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
         <%= form.text_field :isbn_10, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
       </div>
 
@@ -140,6 +140,6 @@
       <%= link_to "Cancel", books_path, class: "px-4 py-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors cursor-pointer" %>
     <% end %>
 
-    <%= form.submit(book.persisted? ? "Save Changes" : "Create Book", class: "px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all text-sm cursor-pointer") %>
+    <%= form.submit(book.persisted? ? "Update Book" : "Create Book", class: "px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all text-sm cursor-pointer") %>
   </div>
 <% end %>

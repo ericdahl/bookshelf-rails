@@ -42,6 +42,7 @@ class BooksController < ApplicationController
     respond_to do |format|
       if @book.update(book_params)
         @books = fetch_ordered_books
+        flash.now[:notice] = "Book was successfully updated."
         format.turbo_stream do
           render turbo_stream: [
             turbo_stream.replace(
