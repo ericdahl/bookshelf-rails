@@ -88,11 +88,11 @@
         <div class="divide-y divide-gray-100 bg-white">
           <% books.each_with_index do |book, index| %>
             <div id="book_<%= book.id %>" 
-                 class="group px-6 py-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 cursor-move transition-all duration-200 <%= index.even? ? 'bg-gray-50/50' : 'bg-white' %>"
+                 class="group px-6 py-4 hover:bg-slate-50/80 cursor-pointer transition-all duration-150 <%= index.even? ? 'bg-slate-50/40' : 'bg-white' %>"
                  draggable="true"
                  data-draggable-target="book"
                  data-book-id="<%= book.id %>"
-                 data-action="dragstart->draggable#dragstart dragend->draggable#dragend">
+                 data-action="dragstart->draggable#dragstart dragend->draggable#dragend click->draggable#openModal">
               <div class="grid grid-cols-12 gap-4 items-center">
                 <%= render "book_summary", book: book %>
               </div>

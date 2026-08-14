@@ -1,9 +1,13 @@
-<%= form_with(model: book, class: "contents") do |form| %>
+<%= form_with(model: book, class: "space-y-6") do |form| %>
   <% if book.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h2>
-
-      <ul class="list-disc ml-6">
+    <div id="error_explanation" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+      <div class="flex items-center gap-2 font-semibold text-red-800 mb-1">
+        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</span>
+      </div>
+      <ul class="list-disc list-inside text-sm space-y-1 ml-2">
         <% book.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,63 +15,131 @@
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: "form-input" %>
+  <!-- Core Details -->
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :title, class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" do %>
+          Title <span class="text-red-500">*</span>
+        <% end %>
+        <%= form.text_field :title, required: true, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :author %>
-    <%= form.text_field :author, class: "form-input" %>
+      <div>
+        <%= form.label :author, "Author", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.text_field :author, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
+    </div>
 
-    <%= form.label :isbn_10 %>
-    <%= form.text_field :isbn_10, class: "form-input" %>
+    <!-- Status & Format & Series -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <%= form.label :status, class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" do %>
+          Status <span class="text-red-500">*</span>
+        <% end %>
+        <%= form.select :status, Book.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :isbn_13 %>
-    <%= form.text_field :isbn_13, class: "form-input" %>
+      <div>
+        <%= form.label :book_type, class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" do %>
+          Book type <span class="text-red-500">*</span>
+        <% end %>
+        <%= form.select :book_type, Book.book_types.keys.map { |k| [k.humanize, k] }, {}, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :publication_year %>
-    <%= form.number_field :publication_year, class: "form-input" %>
+      <div>
+        <%= form.label :series_id, "Series", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.collection_select :series_id, Series.order(:name), :id, :name, { include_blank: "None" }, { class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" } %>
+      </div>
+    </div>
 
-    <%= form.label :publisher %>
-    <%= form.text_field :publisher, class: "form-input" %>
+    <!-- Rating & Publication Details -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div>
+        <%= form.label :rating, "Rating (1–10)", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.number_field :rating, in: 1..10, placeholder: "1-10", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :page_count %>
-    <%= form.number_field :page_count, class: "form-input" %>
+      <div>
+        <%= form.label :publication_year, "Year", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.number_field :publication_year, placeholder: "e.g. 2024", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :description %>
-    <%= form.text_area :description, class: "form-input" %>
+      <div>
+        <%= form.label :page_count, "Pages", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.number_field :page_count, placeholder: "e.g. 350", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :cover_image_url %>
-    <%= form.text_field :cover_image_url, class: "form-input" %>
+      <div>
+        <%= form.label :publisher, "Publisher", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.text_field :publisher, placeholder: "Publisher name", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
+    </div>
 
-    <%= form.label :open_library_id %>
-    <%= form.text_field :open_library_id, class: "form-input" %>
+    <!-- Reading Dates -->
+    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+      <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Reading Activity Dates</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <%= form.label :date_added, "Date Added", class: "block text-xs font-medium text-slate-600 mb-1" %>
+          <%= form.date_field :date_added, class: "w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm" %>
+        </div>
 
-    <%= form.label :series_id %>
-    <%= form.collection_select :series_id, Series.all, :id, :name, { include_blank: true }, { class: "form-input" } %>
+        <div>
+          <%= form.label :date_started, "Date Started", class: "block text-xs font-medium text-slate-600 mb-1" %>
+          <%= form.date_field :date_started, class: "w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm" %>
+        </div>
 
-    <%= form.label :status %>
-    <%= form.select :status, Book.statuses.keys.map { |k| [k.humanize, k] }, {}, class: "form-input" %>
+        <div>
+          <%= form.label :date_finished, "Date Finished", class: "block text-xs font-medium text-slate-600 mb-1" %>
+          <%= form.date_field :date_finished, class: "w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm" %>
+        </div>
+      </div>
+    </div>
 
-    <%= form.label :rating %>
-    <%= form.number_field :rating, in: 1..10, class: "form-input" %>
+    <!-- Identifiers & Cover URL -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <%= form.label :isbn_13, "Isbn 13", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.text_field :isbn_13, placeholder: "978...", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :comments %>
-    <%= form.text_area :comments, class: "form-input" %>
+      <div>
+        <%= form.label :isbn_10, "Isbn 10", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.text_field :isbn_10, class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
 
-    <%= form.label :book_type %>
-    <%= form.select :book_type, Book.book_types.keys.map { |k| [k.humanize, k] }, {}, class: "form-input" %>
+      <div>
+        <%= form.label :open_library_id, "OpenLibrary ID", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+        <%= form.text_field :open_library_id, placeholder: "OL...W", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+      </div>
+    </div>
 
-    <%= form.label :date_added %>
-    <%= form.date_field :date_added, class: "form-input" %>
+    <div>
+      <%= form.label :cover_image_url, "Cover Image URL", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+      <%= form.text_field :cover_image_url, placeholder: "https://...", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+    </div>
 
-    <%= form.label :date_started %>
-    <%= form.date_field :date_started, class: "form-input" %>
+    <!-- Text Fields -->
+    <div>
+      <%= form.label :description, "Description", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+      <%= form.text_area :description, rows: 3, placeholder: "Book overview or synopsis...", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+    </div>
 
-    <%= form.label :date_finished %>
-    <%= form.date_field :date_finished, class: "form-input" %>
+    <div>
+      <%= form.label :comments, "My Notes / Comments", class: "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" %>
+      <%= form.text_area :comments, rows: 3, placeholder: "Personal reflections, review, quotes...", class: "w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all shadow-xs" %>
+    </div>
   </div>
 
-  <div class="inline">
-    <%= form.submit(book.persisted? ? "Update Book" : "Create Book", class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer") %>
+  <!-- Form Actions -->
+  <div class="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+    <% if book.persisted? %>
+      <%= link_to "Cancel", book, data: { turbo_frame: "book_modal" }, class: "px-4 py-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors cursor-pointer" %>
+    <% else %>
+      <%= link_to "Cancel", books_path, class: "px-4 py-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium text-sm transition-colors cursor-pointer" %>
+    <% end %>
+
+    <%= form.submit(book.persisted? ? "Update Book" : "Create Book", class: "px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all text-sm cursor-pointer") %>
   </div>
 <% end %>

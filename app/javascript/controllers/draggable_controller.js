@@ -24,6 +24,21 @@ export default class extends Controller {
     event.currentTarget.classList.remove("bg-blue-50")
   }
 
+  openModal(event) {
+    // Do not trigger modal if user clicked on an interactive link, button, form or input
+    if (event.target.closest("a, button, form, input, select, textarea")) {
+      return
+    }
+
+    const bookId = event.currentTarget.dataset.bookId
+    if (bookId) {
+      const frame = document.getElementById("book_modal")
+      if (frame) {
+        frame.src = `/books/${bookId}`
+      }
+    }
+  }
+
   drop(event) {
     event.preventDefault()
     event.currentTarget.classList.remove("bg-blue-50")
