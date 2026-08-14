@@ -89,19 +89,22 @@ class Api::V1::OpenLibrarySearchesControllerTest < ActionDispatch::IntegrationTe
   # OpenLibrary API error responses
   # ---------------------------------------------------------------------------
 
-  test "should return upstream error status when OpenLibrary returns 503" do
+  test "should return 502 when OpenLibrary returns 503" do
     stub_openlibrary(status: 503, body: "Service Unavailable")
 
     get "/api/v1/search", params: { query: "test" }
-    assert_response 503
-    assert_includes JSON.parse(response.body)["error"], "Failed to fetch data from OpenLibrary"
+    assert_response :bad_gateway
+    body = JSON.parse(response.body)
+    assert_equal "Failed to fetch data from OpenLibrary", body["error"]
+    assert_nil body["details"], "upstream response body must not be forwarded to clients"
   end
 
-  test "should return 500 when OpenLibrary returns 500" do
+  test "should return 502 when OpenLibrary returns 500" do
     stub_openlibrary(status: 500, body: "Internal Server Error")
 
     get "/api/v1/search", params: { query: "test" }
-    assert_response 500
+    assert_response :bad_gateway
+    assert_nil JSON.parse(response.body)["details"], "upstream response body must not be forwarded to clients"
   end
 
   # ---------------------------------------------------------------------------
