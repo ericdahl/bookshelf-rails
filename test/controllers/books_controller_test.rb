@@ -112,6 +112,15 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Turbo Updated Title", @book.reload.title
   end
 
+  test "should refresh both old and new status sections when status changes via turbo_stream" do
+    @book.update!(status: "want_to_read")
+    patch book_url(@book), params: { book: { title: @book.title, status: "read", book_type: @book.book_type } }, as: :turbo_stream
+    assert_response :success
+    assert_includes response.body, %(target="read_section"), "new status section must be refreshed"
+    assert_includes response.body, %(target="want_to_read_section"), "old status section must be refreshed"
+    assert_equal "read", @book.reload.status
+  end
+
   test "should return unprocessable_entity via turbo_stream when update fails" do
     patch book_url(@book), params: { book: { title: "" } }, as: :turbo_stream
     assert_response :unprocessable_entity
