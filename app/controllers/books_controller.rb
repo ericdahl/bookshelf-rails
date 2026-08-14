@@ -39,19 +39,28 @@ class BooksController < ApplicationController
 
   # PATCH/PUT /books/1 or /books/1.json
   def update
+    old_status = @book.status
     respond_to do |format|
       if @book.update(book_params)
         @books = fetch_ordered_books
         flash.now[:notice] = "Book was successfully updated."
         format.turbo_stream do
-          render turbo_stream: [
+          streams = [
+            turbo_stream.replace("book_modal", template: "books/show"),
             turbo_stream.replace(
               "#{@book.status}_section",
               partial: "status_section",
               locals: { status: @book.status, title: status_title(@book.status), books: @books.select { |b| b.status == @book.status } }
-            ),
-            turbo_stream.replace("book_modal", template: "books/show")
+            )
           ]
+          if old_status != @book.status
+            streams << turbo_stream.replace(
+              "#{old_status}_section",
+              partial: "status_section",
+              locals: { status: old_status, title: status_title(old_status), books: @books.select { |b| b.status == old_status } }
+            )
+          end
+          render turbo_stream: streams
         end
         format.html { redirect_to @book, notice: "Book was successfully updated." }
         format.json { render :show, status: :ok, location: @book }

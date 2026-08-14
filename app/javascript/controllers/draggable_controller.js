@@ -45,9 +45,7 @@ export default class extends Controller {
     
     const bookId = event.dataTransfer.getData("text/plain")
     const newStatus = event.currentTarget.dataset.status
-    
-    console.log(`Moving book ${bookId} to status ${newStatus}`)
-    
+
     // Use Turbo to submit the form
     const form = document.createElement('form')
     form.method = 'POST'
