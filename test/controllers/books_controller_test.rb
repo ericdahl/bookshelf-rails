@@ -133,16 +133,11 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return unprocessable_entity via turbo_stream when nothing to restore" do
-    # Reset class variable to guarantee clean state for this test
-    BooksController.class_variable_set(:@@last_deleted_book, nil)
-
     post restore_book_url, as: :turbo_stream
     assert_response :unprocessable_entity
   end
 
   test "should redirect with alert via html when nothing to restore" do
-    BooksController.class_variable_set(:@@last_deleted_book, nil)
-
     post restore_book_url
     assert_redirected_to books_url
     assert_equal "No book to restore.", flash[:alert]
@@ -158,6 +153,17 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
                                           as: :turbo_stream
     assert_response :success
     assert_equal "currently_reading", @book.reload.status
+  end
+
+  test "should return 422 for invalid status value via turbo_stream" do
+    patch update_status_book_url(@book), params: { status: "invalid_status" }, as: :turbo_stream
+    assert_response :unprocessable_entity
+  end
+
+  test "should return 422 for invalid status value via JSON" do
+    patch update_status_book_url(@book), params: { status: "invalid_status" }, as: :json
+    assert_response :unprocessable_entity
+    assert_equal "Invalid status value", JSON.parse(response.body)["error"]
   end
 
   test "should update book status and respond with JSON" do
@@ -305,6 +311,17 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
       post add_from_search_books_url, params: {
         title: "",
         status: "want_to_read"
+      }, as: :turbo_stream
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "should return 422 for invalid status in add_from_search" do
+    assert_no_difference("Book.count") do
+      post add_from_search_books_url, params: {
+        title: "Some Book",
+        open_library_id: "OL999W",
+        status: "not_a_real_status"
       }, as: :turbo_stream
     end
     assert_response :unprocessable_entity

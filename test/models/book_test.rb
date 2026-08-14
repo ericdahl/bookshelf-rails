@@ -135,32 +135,27 @@ class BookTest < ActiveSupport::TestCase
     assert @book.valid?
   end
 
-  # NOTE: isbn_10 and isbn_13 uniqueness validations are commented out on main.
-  # The following tests cover the desired behavior and will pass once
-  # PR #120 (fix/db-constraints-and-indexes) is merged and the validations
-  # are enabled in the model.
-  #
-  # test "isbn_13 should be unique" do
-  #   duplicate = Book.new(
-  #     title: "Duplicate ISBN Book",
-  #     status: :want_to_read,
-  #     book_type: :physical_book,
-  #     isbn_13: @book.isbn_13
-  #   )
-  #   assert_not duplicate.valid?
-  #   assert_includes duplicate.errors[:isbn_13], "has already been taken"
-  # end
-  #
-  # test "isbn_10 should be unique" do
-  #   duplicate = Book.new(
-  #     title: "Duplicate ISBN Book",
-  #     status: :want_to_read,
-  #     book_type: :physical_book,
-  #     isbn_10: @book.isbn_10
-  #   )
-  #   assert_not duplicate.valid?
-  #   assert_includes duplicate.errors[:isbn_10], "has already been taken"
-  # end
+  test "isbn_13 should be unique" do
+    duplicate = Book.new(
+      title: "Duplicate ISBN Book",
+      status: :want_to_read,
+      book_type: :physical_book,
+      isbn_13: @book.isbn_13
+    )
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:isbn_13], "has already been taken"
+  end
+
+  test "isbn_10 should be unique" do
+    duplicate = Book.new(
+      title: "Duplicate ISBN Book",
+      status: :want_to_read,
+      book_type: :physical_book,
+      isbn_10: @book.isbn_10
+    )
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:isbn_10], "has already been taken"
+  end
 
   # ---------------------------------------------------------------------------
   # Fixtures sanity check (documents what data is available in tests)

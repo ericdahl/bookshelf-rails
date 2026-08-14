@@ -75,7 +75,7 @@ class BooksController < ApplicationController
 
   def restore
     if session[:last_deleted_book]
-      restored_book = Book.create(session[:last_deleted_book].except("id", "created_at", "updated_at"))
+      restored_book = Book.create!(session[:last_deleted_book].except("id", "created_at", "updated_at"))
       session.delete(:last_deleted_book)
       @book_status = restored_book.status
       @books = Book.all.includes(:series).order(@sort_column => @sort_direction)
@@ -101,6 +101,12 @@ class BooksController < ApplicationController
         format.turbo_stream { head :unprocessable_entity }
         format.html { redirect_to books_url, alert: "No book to restore." }
       end
+    end
+  rescue ActiveRecord::RecordInvalid
+    session.delete(:last_deleted_book)
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.html { redirect_to books_url, alert: "Could not restore book." }
     end
   end
 
@@ -159,6 +165,10 @@ class BooksController < ApplicationController
         format.turbo_stream { head :unprocessable_entity }
       end
     end
+  rescue ArgumentError
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+    end
   end
 
   def update_status
@@ -182,6 +192,11 @@ class BooksController < ApplicationController
     respond_to do |format|
       format.turbo_stream { head :not_found }
       format.json { render json: { error: "Book not found" }, status: :not_found }
+    end
+  rescue ArgumentError
+    respond_to do |format|
+      format.turbo_stream { head :unprocessable_entity }
+      format.json { render json: { error: "Invalid status value" }, status: :unprocessable_entity }
     end
   end
 

@@ -61,14 +61,14 @@ module Api
             render json: results
           else
             Rails.logger.error "[OpenLibrary API] Failed with status #{response.code}: #{response.body}"
-            render json: { error: "Failed to fetch data from OpenLibrary", details: response.body }, status: response.code
+            render json: { error: "Failed to fetch data from OpenLibrary" }, status: :bad_gateway
           end
         rescue HTTParty::Error => e # Covers network errors, timeouts, etc.
           Rails.logger.error "[OpenLibrary API] HTTParty error: #{e.message}"
-          render json: { error: "HTTParty error: #{e.message}" }, status: :internal_server_error
+          render json: { error: "Failed to connect to OpenLibrary" }, status: :internal_server_error
         rescue StandardError => e
           Rails.logger.error "[OpenLibrary API] Unexpected error: #{e.message}\n#{e.backtrace.join("\n")}"
-          render json: { error: "An unexpected error occurred: #{e.message}" }, status: :internal_server_error
+          render json: { error: "An unexpected error occurred" }, status: :internal_server_error
         end
       end
 
