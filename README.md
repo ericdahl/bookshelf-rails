@@ -6,7 +6,7 @@ books directly to your shelf.
 
 ## Tech stack
 
-- **Ruby** 3.4.4 / **Rails** 8.1
+- **Ruby** 3.4 / **Rails** 8.1
 - **SQLite** (development, test, production)
 - **Tailwind CSS** + **Hotwire** (Turbo + Stimulus)
 - **HTTParty** for OpenLibrary API calls
@@ -18,7 +18,7 @@ books directly to your shelf.
 
 | Tool | Notes |
 |------|-------|
-| Ruby 3.4.4 | Use [rbenv](https://github.com/rbenv/rbenv) or [asdf](https://asdf-vm.com/) |
+| Ruby 3.4 | Use [rbenv](https://github.com/rbenv/rbenv) or [asdf](https://asdf-vm.com/) |
 | Bundler 2.6+ | `gem install bundler` |
 | SQLite 3 | Usually pre-installed on macOS/Linux |
 
